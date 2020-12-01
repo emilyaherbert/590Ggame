@@ -1,0 +1,23 @@
+﻿using UnityEngine;
+namespace HeroClash {
+  internal class TowerProjectile : MonoBehaviour {
+    private const float MAX_DIST_DELTA = 0.2f;
+
+    internal float damage;
+    internal Target target;
+
+    private void OnTriggerEnter(Collider other) {
+      if (other == target.Box) {
+        target.Character.Self = new Stat(target.Character.Self,
+          target.Character.Self.Health - damage);
+        Destroy(gameObject);
+      }
+    }
+
+    private void Update() {
+      transform.position = Vector3.MoveTowards(transform.position,
+        target.Box.transform.position,
+        MAX_DIST_DELTA);
+    }
+  }
+}
