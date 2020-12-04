@@ -198,6 +198,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1275760757076294124, guid: 554931cf2ecf21444adc06b43497ebad, type: 3}
+      propertyPath: damage
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 1275760757076294124, guid: 554931cf2ecf21444adc06b43497ebad, type: 3}
+      propertyPath: <Integrity>k__BackingField
+      value: 5000
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 554931cf2ecf21444adc06b43497ebad, type: 3}
 --- !u!1001 &406661008
@@ -381,6 +389,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8074278479421003533, guid: f2857f81771bb59448f2a6601565de64, type: 3}
+      propertyPath: <Team>k__BackingField
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_Enabled
       value: 0
@@ -402,6 +414,7 @@ GameObject:
   - component: {fileID: 786249451}
   - component: {fileID: 786249450}
   - component: {fileID: 786249449}
+  - component: {fileID: 786249452}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -474,6 +487,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 60, y: 0, z: 0}
+--- !u!114 &786249452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 786249448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21bfbe8d28e094a779584c1d13e2b5f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
 --- !u!1001 &1210121681
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -553,6 +579,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1275760757076294124, guid: 554931cf2ecf21444adc06b43497ebad, type: 3}
+      propertyPath: damage
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 1275760757076294124, guid: 554931cf2ecf21444adc06b43497ebad, type: 3}
+      propertyPath: <Team>k__BackingField
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1275760757076294124, guid: 554931cf2ecf21444adc06b43497ebad, type: 3}
+      propertyPath: <Integrity>k__BackingField
+      value: 5000
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 554931cf2ecf21444adc06b43497ebad, type: 3}
 --- !u!1001 &1280898063
@@ -629,6 +667,14 @@ PrefabInstance:
     - target: {fileID: 410436, guid: 554931cf2ecf21444adc06b43497ebad, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1275760757076294124, guid: 554931cf2ecf21444adc06b43497ebad, type: 3}
+      propertyPath: damage
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1275760757076294124, guid: 554931cf2ecf21444adc06b43497ebad, type: 3}
+      propertyPath: <Integrity>k__BackingField
+      value: 2000
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 554931cf2ecf21444adc06b43497ebad, type: 3}
@@ -874,6 +920,18 @@ PrefabInstance:
     - target: {fileID: 410436, guid: 554931cf2ecf21444adc06b43497ebad, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1275760757076294124, guid: 554931cf2ecf21444adc06b43497ebad, type: 3}
+      propertyPath: damage
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1275760757076294124, guid: 554931cf2ecf21444adc06b43497ebad, type: 3}
+      propertyPath: <Team>k__BackingField
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1275760757076294124, guid: 554931cf2ecf21444adc06b43497ebad, type: 3}
+      propertyPath: <Integrity>k__BackingField
+      value: 2000
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 554931cf2ecf21444adc06b43497ebad, type: 3}

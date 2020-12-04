@@ -202,6 +202,7 @@ GameObject:
   m_Component:
   - component: {fileID: 763243017472525068}
   - component: {fileID: 1113915861286755195}
+  - component: {fileID: 8074278479421003533}
   m_Layer: 2
   m_Name: Behavior
   m_TagString: Untagged
@@ -236,3 +237,19 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 3
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8074278479421003533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8952839152533142229}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 317936e50e46d48b69aeec47240c25f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  materials:
+  - {fileID: 2100000, guid: 5c2fc3c78e6e1b2408c6146e5a0e0a0d, type: 2}
+  - {fileID: 2100000, guid: c7b8573397ffaf942878ef54e800114f, type: 2}
+  <Team>k__BackingField: 0
