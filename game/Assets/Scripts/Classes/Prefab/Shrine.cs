@@ -10,6 +10,8 @@ namespace HeroClash {
     private Coroutine heal;
     private Renderer render;
 
+    [SerializeReference] private Material[] materials = new Material[2];
+
     public float Integrity {
       get => integrity;
       set => integrity = Mathf.Max(Mathf.Min(MAX_INT, value), 0);
@@ -40,7 +42,7 @@ namespace HeroClash {
         n.hero.Team == Team) ? n.hero : null;
 
       if (hero != null) {
-        render.material.color = Color.green;
+        render.material = materials[1];
         heal = StartCoroutine(nameof(Heal), hero);
       }
     }
@@ -49,7 +51,7 @@ namespace HeroClash {
       if (heal != null &&
         ((other.gameObject.TryGetComponent(out Player p) && p.hero.Team == Team) ||
         (other.gameObject.TryGetComponent(out NPC n) && n.hero.Team == Team))) {
-        render.material.color = Color.white;
+        render.material = materials[0];
         StopCoroutine(nameof(Heal));
         heal = null;
       }
