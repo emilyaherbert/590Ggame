@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 436116}
   - component: {fileID: 3309654}
   - component: {fileID: 2393080}
-  - component: {fileID: 6429364}
+  - component: {fileID: 5255366183672146720}
   m_Layer: 0
   m_Name: mesh_Brazier_03_Frame
   m_TagString: Untagged
@@ -82,8 +82,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &6429364
-MeshCollider:
+--- !u!135 &5255366183672146720
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -92,10 +92,9 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: c79dbfe5d408bed48b791b3ea2d06149, type: 3}
+  serializedVersion: 2
+  m_Radius: 0.7
+  m_Center: {x: 0, y: 0.25, z: 0}
 --- !u!1 &152516
 GameObject:
   m_ObjectHideFlags: 0
@@ -107,7 +106,7 @@ GameObject:
   - component: {fileID: 452558}
   - component: {fileID: 3303806}
   - component: {fileID: 2372374}
-  - component: {fileID: 6436116}
+  - component: {fileID: 5080031995089380601}
   m_Layer: 0
   m_Name: pref_Brazier_03_Metal
   m_TagString: Untagged
@@ -124,7 +123,7 @@ Transform:
   m_GameObject: {fileID: 152516}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 20, y: 20, z: 20}
   m_Children:
   - {fileID: 436116}
   - {fileID: 763243017472525068}
@@ -180,8 +179,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &6436116
-MeshCollider:
+--- !u!135 &5080031995089380601
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -190,10 +189,9 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: ea192c1f757f6394e9c42bc23b11ce4e, type: 3}
+  serializedVersion: 2
+  m_Radius: 0.7
+  m_Center: {x: 0, y: 0.25, z: 0}
 --- !u!1 &8952839152533142229
 GameObject:
   m_ObjectHideFlags: 0
