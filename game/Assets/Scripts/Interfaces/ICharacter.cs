@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using UnityEngine;
 namespace HeroClash {
   internal interface ICharacter {
     Stat Self { get; set; }
@@ -7,7 +6,6 @@ namespace HeroClash {
     STATE State { get; set; }
     TEAM Team { get; set; }
 
-    void Move(Vector3 vector3);
     IEnumerator Attack();
   }
 }
