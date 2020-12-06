@@ -10,9 +10,10 @@ namespace HeroClash {
 
     protected override float AccelGain => 0.25f;
     protected override float AttackLoss => 0.025f;
-    protected override float DamageGain => 2.5f;
-    protected override float HealthGain => 25.0f;
     protected override float MovingGain => 0.05f;
+
+    public override float DamageGain => 2.5f;
+    public override float HealthGain => 25.0f;
 
     private void Start() {
       nav = GetComponent<NavMeshAgent>();

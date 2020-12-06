@@ -14,9 +14,10 @@ namespace HeroClash {
 
     protected abstract float AccelGain { get; }
     protected abstract float AttackLoss { get; }
-    protected abstract float DamageGain { get; }
-    protected abstract float HealthGain { get; }
     protected abstract float MovingGain { get; }
+
+    public abstract float DamageGain { get; }
+    public abstract float HealthGain { get; }
 
     internal int Level => (int)(XP / XP_PER_LVL);
     internal float XP {
