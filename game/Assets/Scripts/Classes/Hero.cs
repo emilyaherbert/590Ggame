@@ -39,7 +39,7 @@ namespace HeroClash {
     public Stat Self { get; set; }
     public Target Them { get; set; }
     public STATE State { get; set; }
-    public TEAM Team { get; set; }
+    [field: SerializeField] public TEAM Team { get; set; }
 
     private bool NoMove() {
       Vector3 pt = Them.Box.ClosestPoint(transform.position);
