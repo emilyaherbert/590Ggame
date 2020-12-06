@@ -9,6 +9,7 @@ namespace HeroClash {
     }
 
     private void Update() {
+      if (GameManager.paused) { return; }
       if (Input.GetMouseButtonDown(0) &&
           Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition),
             out RaycastHit hit) &&

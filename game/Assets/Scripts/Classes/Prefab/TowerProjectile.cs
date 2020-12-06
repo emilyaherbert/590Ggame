@@ -15,6 +15,7 @@ namespace HeroClash {
     }
 
     private void Update() {
+      if (GameManager.paused) { return; }
       transform.position = Vector3.MoveTowards(transform.position,
         target.Box.transform.position,
         MAX_DIST_DELTA);

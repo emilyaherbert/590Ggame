@@ -68,6 +68,7 @@ namespace HeroClash {
     }
 
     private void Update() {
+      if (GameManager.paused) { return; }
       if (State == STATE.MOVE &&
         !nav.pathPending &&
         nav.remainingDistance < nav.stoppingDistance &&
