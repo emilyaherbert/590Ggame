@@ -7,8 +7,15 @@ namespace HeroClash {
                         SMOOTH_SPEED = 2.0f;
     private readonly Vector3 OFFSET = (100.0f * Vector3.up) + (60.0f * Vector3.back);
 
-    // TODO: remove attr; set programmatically
-    [SerializeReference] internal Transform target = default;
+    private Transform target;
+
+    private readonly Transform[] spawns = new Transform[2];
+    [SerializeReference] private GameObject[] prefabs = new GameObject[2];
+
+    private void Awake() {
+      spawns[0] = GameObject.Find("GruntSpawn").transform;
+      spawns[1] = GameObject.Find("GolemSpawn").transform;
+    }
 
     private void LateUpdate() {
       if (Vector3.Distance(transform.position,
@@ -17,6 +24,15 @@ namespace HeroClash {
           target.position + OFFSET,
           SMOOTH_SPEED * Time.deltaTime);
       }
+    }
+
+    private void Start() {
+      _ = Instantiate(prefabs[0], spawns[0].position, spawns[0].rotation);
+      // TODO: UI determine player
+      Player p = Instantiate(prefabs[1],
+        spawns[1].position, spawns[1].rotation).AddComponent<Player>();
+      target = p.transform;
+      p.hero = p.GetComponent<HeroGolem>();
     }
 
     private void Update() {
