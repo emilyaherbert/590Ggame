@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 namespace HeroClash {
   internal class Minion : MonoBehaviour, ICharacter {
     internal const float START_ACCEL = 10.0f,
@@ -8,12 +9,20 @@ namespace HeroClash {
                           START_HEALTH = 100.0f,
                           START_MOVING = 10.0f;
 
+    private NavMeshAgent nav;
+
     public float DamageGain => 5.0f;
     public float HealthGain => 10.0f;
     public Stat Self { get; set; }
     public Target Them { get; set; }
     public STATE State { get; set; }
     public TEAM Team { get; set; }
+
+    private void Start() {
+      nav = GetComponent<NavMeshAgent>();
+      nav.speed = Self.MoveSpeed;
+      nav.acceleration = Self.Accelerate;
+    }
 
     public IEnumerator Attack() {
       throw new System.NotImplementedException();
