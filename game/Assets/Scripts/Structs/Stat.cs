@@ -3,6 +3,7 @@ namespace HeroClash {
   internal struct Stat {
     private float health;
 
+    internal float Accelerate { get; }
     internal float AtckSpeed { get; }
     internal float MaxDamage { get; }
     internal float Damage => Random.Range(0.5f, 1.0f) * MaxDamage;
@@ -13,11 +14,13 @@ namespace HeroClash {
     }
     internal float MoveSpeed { get; }
 
-    internal Stat(float atckSpeed,
+    internal Stat(float accelerate,
+      float atckSpeed,
       float maxDamage,
       float maxHealth,
       float moveSpeed,
       float health) {
+      Accelerate = accelerate;
       AtckSpeed = atckSpeed;
       MaxDamage = maxDamage;
       MaxHealth = maxHealth;
@@ -25,10 +28,12 @@ namespace HeroClash {
       this.health = health;
     }
 
-    internal Stat(float atckSpeed,
+    internal Stat(float accelerate,
+      float atckSpeed,
       float maxDamage,
       float maxHealth,
       float moveSpeed) {
+      Accelerate = accelerate;
       AtckSpeed = atckSpeed;
       MaxDamage = maxDamage;
       MaxHealth = maxHealth;

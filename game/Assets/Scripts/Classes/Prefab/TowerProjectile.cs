@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 namespace HeroClash {
   internal class TowerProjectile : MonoBehaviour {
-    private const float MAX_DIST_DELTA = 0.2f;
+    private const float MAX_DIST_DELTA = 1.0f;
 
     internal float damage;
     internal Target target;
@@ -15,6 +15,7 @@ namespace HeroClash {
     }
 
     private void Update() {
+      if (GameManager.paused) { return; }
       transform.position = Vector3.MoveTowards(transform.position,
         target.Box.transform.position,
         MAX_DIST_DELTA);

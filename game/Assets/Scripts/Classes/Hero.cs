@@ -1,20 +1,23 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 namespace HeroClash {
   internal abstract class Hero : MonoBehaviour, ICharacter {
     private const float ATTACK_EPSILON = 0.1f,
                         FIX_Y = 0.1f,
-                        MOVE_EPSILON = 0.01f,
                         XP_PER_LVL = 1000.0f;
 
     private float xp;
     private Coroutine atck;
-    private Vector3 loc;
 
+    protected NavMeshAgent nav;
+
+    protected abstract float AccelGain { get; }
     protected abstract float AttackLoss { get; }
-    protected abstract float DamageGain { get; }
-    protected abstract float HealthGain { get; }
     protected abstract float MovingGain { get; }
+
+    public abstract float DamageGain { get; }
+    public abstract float HealthGain { get; }
 
     internal int Level => (int)(XP / XP_PER_LVL);
     internal float XP {
@@ -23,24 +26,27 @@ namespace HeroClash {
         int oldLvl = Level;
         xp += value;
         if (oldLvl < Level) {
-          Self = new Stat(Self.AtckSpeed - AttackLoss,
+          Self = new Stat(Self.Accelerate + AccelGain,
+            Self.AtckSpeed - AttackLoss,
             Self.MaxDamage + DamageGain,
             Self.MaxHealth + HealthGain,
             Self.MoveSpeed + MovingGain,
             Self.Health / Self.MaxHealth * (Self.MaxHealth + HealthGain));
+          nav.speed = Self.MoveSpeed;
+          nav.acceleration = Self.Accelerate;
         }
       }
     }
     public Stat Self { get; set; }
     public Target Them { get; set; }
     public STATE State { get; set; }
-    public TEAM Team { get; set; }
+    [field: SerializeField] public TEAM Team { get; set; }
 
     private bool NoMove() {
       Vector3 pt = Them.Box.ClosestPoint(transform.position);
       pt = new Vector3(pt.x, FIX_Y, pt.z);
       if (Vector3.Distance(transform.position, pt) > ATTACK_EPSILON) {
-        loc = pt;
+        nav.destination = pt;
         Move(false);
         return false;
       }
@@ -52,7 +58,6 @@ namespace HeroClash {
         Them = new Target();
       }
 
-      transform.LookAt(loc);
       StopCoroutine(nameof(Attack));
       atck = null;
       State = STATE.MOVE;
@@ -64,11 +69,12 @@ namespace HeroClash {
     }
 
     private void Update() {
-      if (State == STATE.MOVE) {
-        transform.position = Vector3.MoveTowards(transform.position, loc, Self.MoveSpeed);
-        if (Vector3.Distance(transform.position, loc) < MOVE_EPSILON) {
-          State = Them.Box == null ? STATE.IDLE : STATE.ATCK;
-        }
+      if (GameManager.paused) { return; }
+      if (State == STATE.MOVE &&
+        !nav.pathPending &&
+        nav.remainingDistance < nav.stoppingDistance &&
+        (!nav.hasPath || Mathf.Approximately(nav.velocity.sqrMagnitude, 0))) {
+        State = Them.Box == null ? STATE.IDLE : STATE.ATCK;
       } else if (State == STATE.ATCK && atck == null && NoMove()) {
         atck = StartCoroutine(nameof(Attack));
       }
@@ -95,7 +101,7 @@ namespace HeroClash {
     }
 
     public void Move(Vector3 loc) {
-      this.loc = new Vector3(loc.x, FIX_Y, loc.z);
+      nav.destination = new Vector3(loc.x, FIX_Y, loc.z);
       Move(true);
     }
 

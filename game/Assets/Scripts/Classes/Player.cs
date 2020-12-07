@@ -3,12 +3,8 @@ namespace HeroClash {
   internal class Player : MonoBehaviour {
     internal Hero hero;
 
-    private void Start() {
-      // TODO: delete stmt; set in GameManager.cs
-      hero = gameObject.GetComponent<TempHero>();
-    }
-
     private void Update() {
+      if (GameManager.paused) { return; }
       if (Input.GetMouseButtonDown(0) &&
           Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition),
             out RaycastHit hit) &&

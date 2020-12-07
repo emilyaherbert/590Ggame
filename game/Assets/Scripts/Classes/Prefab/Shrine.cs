@@ -7,8 +7,12 @@ namespace HeroClash {
                         MAX_INT = 10000.0f;
 
     private float integrity;
+    private int wave;
     private Coroutine heal;
     private Renderer render;
+    [SerializeReference] private GameObject prefab = default;
+
+    [SerializeReference] private Material[] materials = new Material[2];
 
     public float Integrity {
       get => integrity;
@@ -40,7 +44,7 @@ namespace HeroClash {
         n.hero.Team == Team) ? n.hero : null;
 
       if (hero != null) {
-        render.material.color = Color.green;
+        render.material = materials[1];
         heal = StartCoroutine(nameof(Heal), hero);
       }
     }
@@ -49,15 +53,34 @@ namespace HeroClash {
       if (heal != null &&
         ((other.gameObject.TryGetComponent(out Player p) && p.hero.Team == Team) ||
         (other.gameObject.TryGetComponent(out NPC n) && n.hero.Team == Team))) {
-        render.material.color = Color.white;
+        render.material = materials[0];
         StopCoroutine(nameof(Heal));
         heal = null;
       }
     }
 
     public IEnumerator Spawn() {
+      Transform[] spawns = new Transform[3];
+      for (int i = 0, j = 0; i < transform.parent.childCount && j < 3; i++) {
+        Transform child = transform.parent.GetChild(i);
+        if (child.CompareTag("Respawn")) {
+          spawns[j] = child;
+          j++;
+        }
+      }
       while (true) {
-        // TODO: spawn minions
+        wave++;
+        foreach (Transform spawn in spawns) {
+          Minion m = Instantiate(prefab,
+            spawn.position,
+            spawn.rotation).GetComponent<Minion>();
+          m.Team = Team;
+          m.Self = new Stat(Minion.START_ACCEL,
+            Minion.START_ATTACK,
+            Minion.START_DAMAGE + (m.DamageGain * wave),
+            Minion.START_HEALTH + (m.HealthGain * wave),
+            Minion.START_MOVING);
+        }
         Integrity += MAX_INT * HEAL_AMNT;
         yield return new WaitForSeconds(SpawnRate);
       }
