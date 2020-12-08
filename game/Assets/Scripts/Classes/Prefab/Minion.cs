@@ -69,6 +69,17 @@ namespace HeroClash {
       }
     }
 
+    /*
+
+    | state  | trigger condition       | next state |
+    |--------|-------------------------|------------|
+    | move   | nearby target           | attack     |
+    | attack | target loses all health | move       |
+    | attack | self loses all health   | dead       |
+    | dead   | complete dying sequence | destroy    |
+
+    */
+
     private void FSM() {
       switch (State) {
         case STATE.IDLE:
