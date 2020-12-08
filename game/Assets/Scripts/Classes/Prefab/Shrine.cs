@@ -10,7 +10,9 @@ namespace HeroClash {
     private int wave;
     private Coroutine heal;
     private Renderer render;
-    [SerializeReference] private GameObject prefab = default;
+    [SerializeReference]
+    private GameObject opposingShrine = default,
+                       prefab = default;
 
     [SerializeReference] private Material[] materials = new Material[2];
 
@@ -20,8 +22,6 @@ namespace HeroClash {
     }
     public float SpawnRate => 120.0f;
     [field: SerializeField] public TEAM Team { get; set; }
-
-    public GameObject opposingShrine;
 
     private void Start() {
       render = transform.parent.gameObject.GetComponent<Renderer>();
