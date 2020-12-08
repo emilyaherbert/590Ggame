@@ -9,7 +9,7 @@ namespace HeroClash {
                           START_ATTACK = 0.5f,
                           START_DAMAGE = 10.0f,
                           START_HEALTH = 100.0f,
-                          START_MOVING = 10.0f;
+                          START_MOVING = 20.0f;
 
     private NavMeshAgent nav;
     private int visionRadius = 100;
@@ -23,6 +23,7 @@ namespace HeroClash {
     public GameObject opposingShrine {get; set; }
 
     private Vector3 opposingShrineDest;
+    private List<GameObject> targets;
 
     private void Start() {
       nav = GetComponent<NavMeshAgent>();
@@ -30,30 +31,47 @@ namespace HeroClash {
       nav.acceleration = Self.Accelerate;
       opposingShrineDest = opposingShrine.transform.position;
       State = STATE.MOVE;
+      targets = new List<GameObject>();
     }
 
     private void Update() {
+      if(Self.Health < 0) {
+        State = STATE.DEAD;
+      }
+      
       FSM();
     }
 
-    private void OnCollisionEnter(Collision collision) {
-      foreach (ContactPoint contact in collision.contacts) {
-        Debug.Log(collision);
+    public void OnTriggerEnter(Collider other) {
+      if(IsEnemy(other.gameObject)) {
+        Debug.Log(other.gameObject);
+        targets.Add(other.gameObject);
+        State = STATE.ATCK;
       }
-      //if (collision.relativeVelocity.magnitude > 2)
-          //audioSource.Play();
+    }
+
+    public void OnTriggerExit(Collider other) {
+      if(IsEnemy(other.gameObject)) {
+        targets.Remove(other.gameObject);
+      }
+      if(targets.Count == 0) {
+        State = STATE.IDLE;
+      }
     }
 
     private void FSM() {
       switch (State) {
         case STATE.IDLE:
+          State = STATE.MOVE;
           break;
         case STATE.MOVE:
           nav.destination = PickDest();
           break;
         case STATE.ATCK:
+          MinionAttack();
           break;
         case STATE.DEAD:
+          new WaitForSeconds(3.0f);
           break;
       }
     }
@@ -63,27 +81,42 @@ namespace HeroClash {
       float dist = Vector3.Distance(transform.position, dest);
       Collider[] hitColliders = Physics.OverlapSphere(transform.position, visionRadius);
       foreach(Collider c in hitColliders) {
-        if(c.GetComponent<Minion>() && c.GetComponent<Minion>().Team != Team) {
+        if(IsEnemyMinion(c.gameObject)) {
           float newDist = Vector3.Distance(transform.position, c.transform.position);
           if(newDist < dist) {
             dest = c.transform.position;
             dist = newDist;
           }
-        } else if(c.GetComponent<HeroGolem>() && c.GetComponent<HeroGolem>().Team != Team) {
-          return c.transform.position;
-        } else if(c.GetComponent<HeroGrunt>() && c.GetComponent<HeroGrunt>().Team != Team) {
+        } else if(IsEnemyHero(c.gameObject)) {
           return c.transform.position;
         }
       }
       return dest;
     }
 
-    private void MoveTowardsShrine() {
-      nav.destination = opposingShrineDest;
+    private bool IsEnemy(GameObject g) {
+      return IsEnemyHero(g) || IsEnemyMinion(g);
+    }
+
+    private bool IsEnemyMinion(GameObject g) {
+      return g.GetComponent<Minion>() && g.GetComponent<Minion>().Team != Team;
+    }
+
+    private bool IsEnemyHero(GameObject g) {
+      if(g.GetComponent<HeroGolem>() && g.GetComponent<HeroGolem>().Team != Team) {
+        return true;
+      } else if(g.GetComponent<HeroGrunt>() && g.GetComponent<HeroGrunt>().Team != Team) {
+        return true;
+      }
+      return false;
+    }
+
+    private void MinionAttack() {
+
     }
 
     public IEnumerator Attack() {
-      throw new System.NotImplementedException();
+      yield return new WaitForSeconds(10000);
     }
   }
 }
