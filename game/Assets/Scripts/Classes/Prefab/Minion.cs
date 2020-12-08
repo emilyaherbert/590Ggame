@@ -9,10 +9,10 @@ namespace HeroClash {
                           START_ATTACK = 0.5f,
                           START_DAMAGE = 10.0f,
                           START_HEALTH = 100.0f,
-                          START_MOVING = 20.0f;
+                          START_MOVING = 10.0f;
 
     private NavMeshAgent nav;
-    private int visionRadius = 100;
+    private int visionRadius = 50;
 
     public float DamageGain => 5.0f;
     public float HealthGain => 10.0f;
@@ -23,7 +23,7 @@ namespace HeroClash {
     public GameObject opposingShrine {get; set; }
 
     private Vector3 opposingShrineDest;
-    private List<GameObject> targets;
+    private bool activeTarget;
 
     private void Start() {
       nav = GetComponent<NavMeshAgent>();
@@ -31,71 +31,106 @@ namespace HeroClash {
       nav.acceleration = Self.Accelerate;
       opposingShrineDest = opposingShrine.transform.position;
       State = STATE.MOVE;
-      targets = new List<GameObject>();
+      Them = new Target();
+      activeTarget = false;
     }
 
     private void Update() {
       if(Self.Health < 0) {
         State = STATE.DEAD;
       }
-      
       FSM();
     }
 
-    public void OnTriggerEnter(Collider other) {
-      if(IsEnemy(other.gameObject)) {
-        Debug.Log(other.gameObject);
-        targets.Add(other.gameObject);
+    public void OnTriggerStay(Collider c) {
+      if(activeTarget) {
+        return;
+      }
+      if(IsEnemy(c.gameObject)) {
+        if (c.gameObject.CompareTag("Character")) {
+          if (c.gameObject.TryGetComponent(out Player p) && p.hero.Team != Team) {
+            Them = new Target(c, p.hero);
+          } else if (c.gameObject.TryGetComponent(out NPC n) && n.hero.Team != Team) {
+            Them = new Target(c, n.hero);
+          } else if (c.gameObject.TryGetComponent(out Minion m) && m.Team != Team) {
+            Them = new Target(c, m);
+          }
+        } else {
+          IStructure s = c.gameObject.GetComponentInChildren<Tower>();
+          if (s == null) {
+            s = c.gameObject.GetComponentInChildren<Shrine>();
+          }
+          if (s.Team != Team) {
+            Them = new Target(c, s);
+          }
+        }
         State = STATE.ATCK;
-      }
-    }
-
-    public void OnTriggerExit(Collider other) {
-      if(IsEnemy(other.gameObject)) {
-        targets.Remove(other.gameObject);
-      }
-      if(targets.Count == 0) {
-        State = STATE.IDLE;
+        activeTarget = true;
       }
     }
 
     private void FSM() {
       switch (State) {
         case STATE.IDLE:
-          State = STATE.MOVE;
           break;
         case STATE.MOVE:
           nav.destination = PickDest();
           break;
         case STATE.ATCK:
-          MinionAttack();
+          StartCoroutine(Attack());
           break;
         case STATE.DEAD:
-          new WaitForSeconds(3.0f);
+          StopCoroutine(nameof(Attack));
+          activeTarget = false;
+          StartCoroutine(DyingSequence());
+          break;
+        case STATE.DESTROY:
+          Destroy(gameObject);
           break;
       }
     }
 
+    private int TypeToRanking(GameObject g) {
+      if(IsEnemyMinion(g)) {
+        return 1;
+      } else if(IsEnemyTower(g)) {
+        return 2;
+      } else if(IsEnemyHero(g)) {
+        return 3;
+      } else if(IsEnemyShrine(g)) {
+        return 4;
+      } else {
+        return -1;
+      }
+    }
+
     private Vector3 PickDest() {
+      // The default movement is to move towards the opponents shrine
       Vector3 dest = opposingShrineDest;
       float dist = Vector3.Distance(transform.position, dest);
+      int ranking = 0;
       Collider[] hitColliders = Physics.OverlapSphere(transform.position, visionRadius);
       foreach(Collider c in hitColliders) {
-        if(IsEnemyMinion(c.gameObject)) {
+        if(IsEnemy(c.gameObject)) {
+          Vector3 newDest = c.transform.position;
           float newDist = Vector3.Distance(transform.position, c.transform.position);
-          if(newDist < dist) {
-            dest = c.transform.position;
+          int newRanking = TypeToRanking(c.gameObject);
+          if(newRanking > ranking) {
+            dest = newDest;
             dist = newDist;
+            ranking = newRanking;
+          } else if(newRanking == ranking && newDist < dist) {
+            dest = newDest;
+            dist = newDist;
+            ranking = newRanking;
           }
-        } else if(IsEnemyHero(c.gameObject)) {
-          return c.transform.position;
         }
       }
       return dest;
     }
 
     private bool IsEnemy(GameObject g) {
-      return IsEnemyHero(g) || IsEnemyMinion(g);
+      return IsEnemyHero(g) || IsEnemyMinion(g) || IsEnemyShrine(g) || IsEnemyTower(g);
     }
 
     private bool IsEnemyMinion(GameObject g) {
@@ -111,12 +146,34 @@ namespace HeroClash {
       return false;
     }
 
-    private void MinionAttack() {
+    private bool IsEnemyTower(GameObject g) {
+      return g.GetComponentInChildren<Tower>() && g.GetComponentInChildren<Tower>().Team != Team;
+    }
 
+    private bool IsEnemyShrine(GameObject g) {
+      return g.GetComponentInChildren<Shrine>() && g.GetComponentInChildren<Shrine>().Team != Team;
     }
 
     public IEnumerator Attack() {
-      yield return new WaitForSeconds(10000);
+      State = STATE.IDLE;
+      while ((Them.Character != null && Them.Character.Self.Health > 0) || (Them.Structure != null && Them.Structure.Integrity > 0)) {
+        if (Them.Character != null) {
+          Them.Character.Self = new Stat(Them.Character.Self, Them.Character.Self.Health - Self.Damage);
+        } else if (Them.Structure != null) {
+          Them.Structure.Integrity -= Self.Damage;
+        }
+        yield return new WaitForSeconds(Self.AtckSpeed);
+      }
+      State = STATE.MOVE;
+      activeTarget = false;
+    }
+
+    private IEnumerator DyingSequence() {
+      State = STATE.IDLE;
+      nav.destination = transform.position;
+      yield return new WaitForSeconds(5.0f);
+      transform.position = new Vector3(100000.0f, 100000.0f, 100000.0f);
+      State = STATE.DESTROY;
     }
   }
 }
