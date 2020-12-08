@@ -319,6 +319,10 @@ PrefabInstance:
       propertyPath: prefab
       value: 
       objectReference: {fileID: 1500939411536426, guid: 274c4c35ed05ea14c87492064b3cadfd, type: 3}
+    - target: {fileID: 8074278479421003533, guid: f2857f81771bb59448f2a6601565de64, type: 3}
+      propertyPath: opposingShrine
+      value: 
+      objectReference: {fileID: 507814305}
     - target: {fileID: 8952839152533142229, guid: f2857f81771bb59448f2a6601565de64, type: 3}
       propertyPath: m_NavMeshLayer
       value: 1
@@ -330,6 +334,16 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: f2857f81771bb59448f2a6601565de64, type: 3}
+--- !u!1 &494213765 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 152516, guid: f2857f81771bb59448f2a6601565de64, type: 3}
+  m_PrefabInstance: {fileID: 406661008}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &507814305 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 152516, guid: f2857f81771bb59448f2a6601565de64, type: 3}
+  m_PrefabInstance: {fileID: 517661077}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &517661077
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -429,6 +443,10 @@ PrefabInstance:
       propertyPath: prefab
       value: 
       objectReference: {fileID: 1812659917213882, guid: 705458a9eac3ae740932e6aa33f3ca89, type: 3}
+    - target: {fileID: 8074278479421003533, guid: f2857f81771bb59448f2a6601565de64, type: 3}
+      propertyPath: opposingShrine
+      value: 
+      objectReference: {fileID: 494213765}
     - target: {fileID: 8074278479421003533, guid: f2857f81771bb59448f2a6601565de64, type: 3}
       propertyPath: <Team>k__BackingField
       value: 1

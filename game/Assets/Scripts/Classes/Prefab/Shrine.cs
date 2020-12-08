@@ -21,6 +21,8 @@ namespace HeroClash {
     public float SpawnRate => 120.0f;
     [field: SerializeField] public TEAM Team { get; set; }
 
+    public GameObject opposingShrine;
+
     private void Start() {
       render = transform.parent.gameObject.GetComponent<Renderer>();
       Integrity = MAX_INT;
@@ -80,6 +82,7 @@ namespace HeroClash {
             Minion.START_DAMAGE + (m.DamageGain * wave),
             Minion.START_HEALTH + (m.HealthGain * wave),
             Minion.START_MOVING);
+          m.opposingShrine = opposingShrine;
         }
         Integrity += MAX_INT * HEAL_AMNT;
         yield return new WaitForSeconds(SpawnRate);
