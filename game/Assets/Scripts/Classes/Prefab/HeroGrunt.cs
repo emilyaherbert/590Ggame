@@ -25,6 +25,7 @@ namespace HeroClash {
         START_MOVING);
       nav.speed = Self.MoveSpeed;
       nav.acceleration = Self.Accelerate;
+      _ = StartCoroutine(nameof(XPGain));
     }
   }
 }
