@@ -17,11 +17,18 @@ namespace HeroClash {
     public Target Them { get; set; }
     public STATE State { get; set; }
     public TEAM Team { get; set; }
+    public GameObject opposingShrine {get; set; }
 
     private void Start() {
       nav = GetComponent<NavMeshAgent>();
       nav.speed = Self.MoveSpeed;
       nav.acceleration = Self.Accelerate;
+    }
+
+    private void Update() {
+      Debug.Log(opposingShrine);
+      Vector3 newDest = new Vector3(opposingShrine.transform.position.x, opposingShrine.transform.position.y, opposingShrine.transform.position.z);
+      nav.destination = newDest;
     }
 
     public IEnumerator Attack() {
