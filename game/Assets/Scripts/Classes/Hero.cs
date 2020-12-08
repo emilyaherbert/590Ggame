@@ -6,10 +6,13 @@ namespace HeroClash {
     private const float ATTACK_EPSILON = 0.1f,
                         FIX_Y = 0.1f,
                         XP_PER_LVL = 1000.0f;
+    private readonly int OTHER_ATCK_HASH = Animator.StringToHash("otherAtck"),
+                          STATE_HASH = Animator.StringToHash("s");
 
     private float xp;
     private Coroutine atck;
 
+    protected Animator anim;
     protected NavMeshAgent nav;
 
     protected abstract float AccelGain { get; }
@@ -61,6 +64,7 @@ namespace HeroClash {
       StopCoroutine(nameof(Attack));
       atck = null;
       State = STATE.MOVE;
+      anim.SetInteger(STATE_HASH, (int)State);
     }
 
     private void SetTarget(Collider c, ICharacter ch, IStructure st) {
@@ -75,6 +79,7 @@ namespace HeroClash {
         nav.remainingDistance < nav.stoppingDistance &&
         (!nav.hasPath || Mathf.Approximately(nav.velocity.sqrMagnitude, 0))) {
         State = Them.Box == null ? STATE.IDLE : STATE.ATCK;
+        anim.SetInteger(STATE_HASH, (int)STATE.IDLE);
       } else if (State == STATE.ATCK && atck == null && NoMove()) {
         atck = StartCoroutine(nameof(Attack));
       }
@@ -106,6 +111,7 @@ namespace HeroClash {
     }
 
     public IEnumerator Attack() {
+      anim.SetInteger(STATE_HASH, (int)State);
       while ((Them.Character != null && Them.Character.Self.Health > 0) ||
               (Them.Structure != null && Them.Structure.Integrity > 0)) {
         if (Them.Character != null && NoMove()) {
@@ -114,10 +120,12 @@ namespace HeroClash {
         } else if (Them.Structure != null) {
           Them.Structure.Integrity -= Self.Damage;
         }
+        anim.SetBool(OTHER_ATCK_HASH, Random.value < 0.5f);
         yield return new WaitForSeconds(Self.AtckSpeed);
       }
       atck = null;
       State = STATE.IDLE;
+      anim.SetInteger(STATE_HASH, (int)State);
     }
   }
 }
