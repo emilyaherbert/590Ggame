@@ -5,11 +5,18 @@ namespace HeroClash {
   internal abstract class Hero : MonoBehaviour, ICharacter {
     private const float ATTACK_EPSILON = 0.1f,
                         FIX_Y = 0.1f,
-                        XP_PER_LVL = 1000.0f;
+                        XP_MULT_LAST_HIT = 10.0f,
+                        XP_MULT_STRUCT = 2.0f,
+                        XP_RATE = 2.0f,
+                        XP_PER_LVL = 1000.0f,
+                        XP_TIME = 1.0f;
+    private readonly int OTHER_ATCK_HASH = Animator.StringToHash("otherAtck"),
+                          STATE_HASH = Animator.StringToHash("s");
 
     private float xp;
     private Coroutine atck;
 
+    protected Animator anim;
     protected NavMeshAgent nav;
 
     protected abstract float AccelGain { get; }
@@ -61,6 +68,7 @@ namespace HeroClash {
       StopCoroutine(nameof(Attack));
       atck = null;
       State = STATE.MOVE;
+      anim.SetInteger(STATE_HASH, (int)State);
     }
 
     private void SetTarget(Collider c, ICharacter ch, IStructure st) {
@@ -75,8 +83,16 @@ namespace HeroClash {
         nav.remainingDistance < nav.stoppingDistance &&
         (!nav.hasPath || Mathf.Approximately(nav.velocity.sqrMagnitude, 0))) {
         State = Them.Box == null ? STATE.IDLE : STATE.ATCK;
+        anim.SetInteger(STATE_HASH, (int)STATE.IDLE);
       } else if (State == STATE.ATCK && atck == null && NoMove()) {
         atck = StartCoroutine(nameof(Attack));
+      }
+    }
+
+    protected IEnumerator XPGain() {
+      while (State != STATE.DEAD) {
+        XP += XP_RATE;
+        yield return new WaitForSeconds(XP_TIME);
       }
     }
 
@@ -106,18 +122,25 @@ namespace HeroClash {
     }
 
     public IEnumerator Attack() {
+      anim.SetInteger(STATE_HASH, (int)State);
       while ((Them.Character != null && Them.Character.Self.Health > 0) ||
               (Them.Structure != null && Them.Structure.Integrity > 0)) {
         if (Them.Character != null && NoMove()) {
           Them.Character.Self = new Stat(Them.Character.Self,
             Them.Character.Self.Health - Self.Damage);
+          XP += (Level + 1) * XP_RATE;
         } else if (Them.Structure != null) {
           Them.Structure.Integrity -= Self.Damage;
+          XP += (Level + 1) * (XP_MULT_STRUCT * XP_RATE);
         }
+        anim.SetBool(OTHER_ATCK_HASH, Random.value < 0.5f);
         yield return new WaitForSeconds(Self.AtckSpeed);
       }
+      XP += (Level + 1) * (XP_MULT_LAST_HIT * XP_RATE);
+      Them = new Target();
       atck = null;
       State = STATE.IDLE;
+      anim.SetInteger(STATE_HASH, (int)State);
     }
   }
 }
