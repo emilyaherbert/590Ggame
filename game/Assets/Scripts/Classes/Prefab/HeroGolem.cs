@@ -1,4 +1,5 @@
-﻿using UnityEngine.AI;
+﻿using UnityEngine;
+using UnityEngine.AI;
 namespace HeroClash {
   internal class HeroGolem : Hero {
     private const float START_ACCEL = 8.0f,
@@ -15,6 +16,7 @@ namespace HeroClash {
     public override float HealthGain => 30.0f;
 
     private void Start() {
+      anim = GetComponent<Animator>();
       nav = GetComponent<NavMeshAgent>();
       Self = new Stat(START_ACCEL,
         START_ATTACK,
@@ -23,6 +25,7 @@ namespace HeroClash {
         START_MOVING);
       nav.speed = Self.MoveSpeed;
       nav.acceleration = Self.Accelerate;
+      _ = StartCoroutine(nameof(XPGain));
     }
   }
 }
