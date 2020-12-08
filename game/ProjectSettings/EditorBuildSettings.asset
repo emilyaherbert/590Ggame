@@ -4,5 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scene/StartScene.unity
+    guid: 176b54e2cd252484fbbfad3f9a26d0bf
+  - enabled: 1
+    path: Assets/Scene/HeroClash.unity
+    guid: bbc19b717bf6e4f71bf2ba1546d687d2
   m_configObjects: {}
