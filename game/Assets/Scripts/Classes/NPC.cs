@@ -30,7 +30,7 @@ namespace HeroClash {
     }
 
     private void Update() {
-      ClassifyDT(decisionTree);
+      //ClassifyDT(decisionTree);
     }
 
     public void OnTriggerStay(Collider c) {

@@ -4,6 +4,8 @@ namespace HeroClash {
   internal class GameManager : MonoBehaviour {
     internal static bool paused;
 
+    public Canvas pauseCanvas;
+
     private const float DIST_EPSILON = 0.1f,
                         SMOOTH_SPEED = 2.0f;
     private readonly Vector3 OFFSET = (80.0f * Vector3.up) + (60.0f * Vector3.back);
@@ -31,15 +33,6 @@ namespace HeroClash {
       source = GetComponent<AudioSource>();
     }
 
-    private void LateUpdate() {
-      if (Vector3.Distance(transform.position,
-        target.position + OFFSET) > DIST_EPSILON) {
-        transform.position = Vector3.Lerp(transform.position,
-          target.position + OFFSET,
-          SMOOTH_SPEED * Time.deltaTime);
-      }
-    }
-
     private void Start() {
        _ = StartCoroutine(nameof(PlayMusic));
       // TODO: UI to determine which character the player wants to play
@@ -48,13 +41,28 @@ namespace HeroClash {
       target = p.transform;
       NPC npc = Instantiate(prefabs[0], spawns[0].position, spawns[0].rotation).AddComponent<NPC>();
       npc.hero = npc.GetComponent<HeroGrunt>();
+      pauseCanvas.enabled = false;
     }
 
     private void Update() {
       if (Input.GetKeyDown(KeyCode.Escape)) {
         Time.timeScale = Time.timeScale == 0 ? 1 : 0;
         paused = !paused;
+        if(paused) {
+          pauseCanvas.enabled = true;
+        } else {
+          pauseCanvas.enabled = false;
+        }
         AudioListener.pause = !AudioListener.pause;
+      }
+    }
+
+    private void LateUpdate() {
+      if (Vector3.Distance(transform.position,
+        target.position + OFFSET) > DIST_EPSILON) {
+        transform.position = Vector3.Lerp(transform.position,
+          target.position + OFFSET,
+          SMOOTH_SPEED * Time.deltaTime);
       }
     }
   }

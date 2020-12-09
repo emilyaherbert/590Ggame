@@ -6,7 +6,7 @@ namespace HeroClash {
                         HEAL_RATE = 5.0f,
                         MAX_INT = 10000.0f;
 
-    private float integrity;
+    public float integrity;
     private int wave;
     private Coroutine heal;
     private Renderer render;
