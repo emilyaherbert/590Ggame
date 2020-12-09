@@ -3,7 +3,6 @@
     IDLE,
     MOVE,
     ATCK,
-    DEAD,
-    DESTROY
+    DEAD
   }
 }

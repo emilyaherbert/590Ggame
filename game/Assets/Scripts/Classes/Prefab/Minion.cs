@@ -11,7 +11,8 @@ namespace HeroClash {
                           START_HEALTH = 100.0f,
                           START_MOVING = 14.0f;
 
-    private Coroutine triggerDeath;
+    private Coroutine move,
+                      triggerDeath;
     private NavMeshAgent nav;
     private int visionRadius = 50;
 
@@ -34,7 +35,7 @@ namespace HeroClash {
       nav = GetComponent<NavMeshAgent>();
       nav.speed = Self.MoveSpeed;
       nav.acceleration = Self.Accelerate;
-      opposingShrineDest = opposingShrine.transform.position;
+      opposingShrineDest = opposingShrine.GetComponent<Collider>().ClosestPoint(transform.position);
       State = STATE.MOVE;
       Them = new Target();
       activeTarget = false;
@@ -44,6 +45,9 @@ namespace HeroClash {
     private void Update() {
       if (Self.Health < 0 && triggerDeath == null) {
         State = STATE.DEAD;
+      } else if (State != STATE.MOVE) {
+        StopCoroutine(nameof(PickDest));
+        move = null;
       }
       FSM();
     }
@@ -92,7 +96,9 @@ namespace HeroClash {
           break;
         case STATE.MOVE:
           anim.SetInteger(STATE_HASH, (int)State);
-          nav.SetDestination(PickDest());
+          if (move == null) {
+            move = StartCoroutine(nameof(PickDest));
+          }
           break;
         case STATE.ATCK:
           anim.SetInteger(STATE_HASH, (int)State);
@@ -104,9 +110,6 @@ namespace HeroClash {
           nav.isStopped = true;
           StopCoroutine(nameof(Attack));
           triggerDeath = StartCoroutine(nameof(DyingSequence));
-          break;
-        case STATE.DESTROY:
-          Destroy(gameObject);
           break;
       }
     }
@@ -125,29 +128,34 @@ namespace HeroClash {
       }
     }
 
-    private Vector3 PickDest() {
+    private IEnumerator PickDest() {
       // The default movement is to move towards the opponents shrine
-      Vector3 dest = opposingShrineDest;
-      float dist = Vector3.Distance(transform.position, dest);
-      int ranking = 0;
-      Collider[] hitColliders = Physics.OverlapSphere(transform.position, visionRadius);
-      foreach (Collider c in hitColliders) {
-        if (IsEnemy(c.gameObject)) {
-          Vector3 newDest = c.transform.position;
-          float newDist = Vector3.Distance(transform.position, c.transform.position);
-          int newRanking = TypeToRanking(c.gameObject);
-          if (newRanking > ranking) {
-            dest = newDest;
-            dist = newDist;
-            ranking = newRanking;
-          } else if (newRanking == ranking && newDist < dist) {
-            dest = newDest;
-            dist = newDist;
-            ranking = newRanking;
+      while (true) {
+        Vector3 dest = opposingShrineDest;
+        float dist = Vector3.Distance(transform.position, dest);
+        int ranking = 0;
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, visionRadius);
+        foreach (Collider c in hitColliders) {
+          if (IsEnemy(c.gameObject)) {
+            Vector3 newDest = c.transform.position;
+            float newDist = Vector3.Distance(transform.position, c.transform.position);
+            int newRanking = TypeToRanking(c.gameObject);
+            if (newRanking > ranking) {
+              dest = newDest;
+              dist = newDist;
+              ranking = newRanking;
+            } else if (newRanking == ranking && newDist < dist) {
+              dest = newDest;
+              dist = newDist;
+              ranking = newRanking;
+            }
           }
         }
+        if (Vector3.Distance(nav.destination, dest) > 1.0f) {
+          _ = nav.SetDestination(dest);
+        }
+        yield return new WaitForSeconds(0.1f);
       }
-      return dest;
     }
 
     private bool IsEnemy(GameObject g) {
@@ -192,8 +200,8 @@ namespace HeroClash {
     }
 
     private IEnumerator DyingSequence() {
-      yield return new WaitForSeconds(5.0f);
-      State = STATE.DESTROY;
+      yield return new WaitForSeconds(2.0f);
+      Destroy(gameObject);
     }
   }
 }
