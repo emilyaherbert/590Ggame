@@ -91,7 +91,7 @@ namespace HeroClash {
 
     protected IEnumerator XPGain() {
       while (State != STATE.DEAD) {
-        XP += XP_RATE;
+        XP = XP_RATE;
         yield return new WaitForSeconds(XP_TIME);
       }
     }
@@ -128,16 +128,16 @@ namespace HeroClash {
         if (Them.Character != null && NoMove()) {
           Them.Character.Self = new Stat(Them.Character.Self,
             Them.Character.Self.Health - Self.Damage);
-          XP += (Level + 1) * XP_RATE;
+          XP = (Level + 1) * XP_RATE;
         } else if (Them.Structure != null) {
           Them.Structure.Integrity -= Self.Damage;
-          XP += (Level + 1) * (XP_MULT_STRUCT * XP_RATE);
+          XP = (Level + 1) * (XP_MULT_STRUCT * XP_RATE);
         }
         transform.LookAt(Them.Box.transform);
         anim.SetBool(OTHER_ATCK_HASH, Random.value < 0.5f);
         yield return new WaitForSeconds(Self.AtckSpeed);
       }
-      XP += (Level + 1) * (XP_MULT_LAST_HIT * XP_RATE);
+      XP = (Level + 1) * (XP_MULT_LAST_HIT * XP_RATE);
       Them = new Target();
       atck = null;
       State = STATE.IDLE;
