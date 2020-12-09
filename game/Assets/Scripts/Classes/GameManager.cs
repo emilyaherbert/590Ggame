@@ -41,13 +41,13 @@ namespace HeroClash {
     }
 
     private void Start() {
-      _ = StartCoroutine(nameof(PlayMusic));
-      _ = Instantiate(prefabs[0], spawns[0].position, spawns[0].rotation);
-      // TODO: UI determine player
-      Player p = Instantiate(prefabs[1],
-        spawns[1].position, spawns[1].rotation).AddComponent<Player>();
-      target = p.transform;
+       _ = StartCoroutine(nameof(PlayMusic));
+      // TODO: UI to determine which character the player wants to play
+      Player p = Instantiate(prefabs[1], spawns[1].position, spawns[1].rotation).AddComponent<Player>();
       p.hero = p.GetComponent<HeroGolem>();
+      target = p.transform;
+      NPC npc = Instantiate(prefabs[0], spawns[0].position, spawns[0].rotation).AddComponent<NPC>();
+      npc.hero = npc.GetComponent<HeroGrunt>();
     }
 
     private void Update() {

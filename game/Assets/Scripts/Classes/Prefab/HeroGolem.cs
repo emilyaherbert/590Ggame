@@ -2,11 +2,11 @@
 using UnityEngine.AI;
 namespace HeroClash {
   internal class HeroGolem : Hero {
-    private const float START_ACCEL = 8.0f,
+    private const float START_ACCEL = 16.0f,
                         START_ATTACK = 1.7f,
                         START_DAMAGE = 15.0f,
                         START_HEALTH = 120.0f,
-                        START_MOVING = 5.0f;
+                        START_MOVING = 12.0f;
 
     protected override float AccelGain => 0.25f;
     protected override float AttackLoss => 0.03f;
