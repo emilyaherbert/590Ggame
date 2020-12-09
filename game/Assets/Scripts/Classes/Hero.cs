@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.AI;
 namespace HeroClash {
   internal abstract class Hero : MonoBehaviour, ICharacter {
-    private const float ATTACK_EPSILON = 0.1f,
+    private const float ATTACK_EPSILON = 2.0f * Mathf.PI,
                         FIX_Y = 0.1f,
                         XP_MULT_LAST_HIT = 10.0f,
                         XP_MULT_STRUCT = 2.0f,
