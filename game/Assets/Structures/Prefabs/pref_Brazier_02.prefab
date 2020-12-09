@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 410436}
   - component: {fileID: 3370142}
   - component: {fileID: 2344138}
-  - component: {fileID: 4834793761253432120}
+  - component: {fileID: 2005912313248098521}
   m_Layer: 0
   m_Name: pref_Brazier_02
   m_TagString: Structure
@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 109036}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 20, y: 20, z: 20}
+  m_LocalScale: {x: 25, y: 25, z: 25}
   m_Children:
   - {fileID: 2025832142447073282}
   - {fileID: 460592217546265584}
@@ -84,7 +84,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &4834793761253432120
+--- !u!136 &2005912313248098521
 CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -92,12 +92,12 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 109036}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.5
-  m_Height: 2
+  m_Height: 3
   m_Direction: 1
-  m_Center: {x: 0, y: 0.5, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &974563587654459320
 GameObject:
   m_ObjectHideFlags: 0
@@ -231,15 +231,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd5a250796ddc46b180ee5cbd1b4ea33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 20
+  innerCollider: {fileID: 0}
+  outerCollider: {fileID: 462062500985181692}
+  damage: 50
   prefabs:
   - {fileID: 1902742491923462, guid: b3d0e1c692a75b34d96fb84c9b431b64, type: 3}
   - {fileID: 1296198054963878, guid: f76595434879f634c8b88f3cc4f08b2c, type: 3}
   materials:
   - {fileID: 2100000, guid: 449739b0adf7ec342beadebc3d9bbd63, type: 2}
   - {fileID: 2100000, guid: c312fe3013a778245b446ab08e4a5726, type: 2}
-  <Integrity>k__BackingField: 2000
-  <Team>k__BackingField: 0
+  <Integrity>k__BackingField: 5000
+  <Team>k__BackingField: 1
 --- !u!1 &3501890030099206337
 GameObject:
   m_ObjectHideFlags: 0

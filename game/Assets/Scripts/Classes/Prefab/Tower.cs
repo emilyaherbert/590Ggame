@@ -2,6 +2,7 @@
 using UnityEngine;
 namespace HeroClash {
   internal class Tower : MonoBehaviour, IStructure {
+
     [SerializeField] private float damage = default;
     private Renderer render;
     private Target target;
