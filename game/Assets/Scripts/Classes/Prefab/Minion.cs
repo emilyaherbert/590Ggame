@@ -11,6 +11,7 @@ namespace HeroClash {
                           START_HEALTH = 100.0f,
                           START_MOVING = 14.0f;
 
+    private Coroutine triggerDeath;
     private NavMeshAgent nav;
     private int visionRadius = 50;
 
@@ -20,7 +21,7 @@ namespace HeroClash {
     public Target Them { get; set; }
     public STATE State { get; set; }
     public TEAM Team { get; set; }
-    public GameObject opposingShrine {get; set; }
+    public GameObject opposingShrine { get; set; }
 
     private Vector3 opposingShrineDest;
     private bool activeTarget;
@@ -41,17 +42,17 @@ namespace HeroClash {
     }
 
     private void Update() {
-      if(Self.Health < 0) {
+      if (Self.Health < 0 && triggerDeath == null) {
         State = STATE.DEAD;
       }
       FSM();
     }
 
     public void OnTriggerStay(Collider c) {
-      if(activeTarget) {
+      if (activeTarget) {
         return;
       }
-      if(IsEnemy(c.gameObject)) {
+      if (IsEnemy(c.gameObject)) {
         if (c.gameObject.CompareTag("Character")) {
           if (c.gameObject.TryGetComponent(out Player p) && p.hero.Team != Team) {
             Them = new Target(c, p.hero);
@@ -100,9 +101,9 @@ namespace HeroClash {
         case STATE.DEAD:
           anim.SetInteger(STATE_HASH, (int)State);
           activeTarget = false;
-          gameObject.GetComponent<NavMeshAgent>().isStopped = true;
+          nav.isStopped = true;
           StopCoroutine(nameof(Attack));
-          StartCoroutine(DyingSequence());
+          triggerDeath = StartCoroutine(nameof(DyingSequence));
           break;
         case STATE.DESTROY:
           Destroy(gameObject);
@@ -111,13 +112,13 @@ namespace HeroClash {
     }
 
     private int TypeToRanking(GameObject g) {
-      if(IsEnemyMinion(g)) {
+      if (IsEnemyMinion(g)) {
         return 1;
-      } else if(IsEnemyTower(g)) {
+      } else if (IsEnemyTower(g)) {
         return 2;
-      } else if(IsEnemyHero(g)) {
+      } else if (IsEnemyHero(g)) {
         return 3;
-      } else if(IsEnemyShrine(g)) {
+      } else if (IsEnemyShrine(g)) {
         return 4;
       } else {
         return -1;
@@ -130,16 +131,16 @@ namespace HeroClash {
       float dist = Vector3.Distance(transform.position, dest);
       int ranking = 0;
       Collider[] hitColliders = Physics.OverlapSphere(transform.position, visionRadius);
-      foreach(Collider c in hitColliders) {
-        if(IsEnemy(c.gameObject)) {
+      foreach (Collider c in hitColliders) {
+        if (IsEnemy(c.gameObject)) {
           Vector3 newDest = c.transform.position;
           float newDist = Vector3.Distance(transform.position, c.transform.position);
           int newRanking = TypeToRanking(c.gameObject);
-          if(newRanking > ranking) {
+          if (newRanking > ranking) {
             dest = newDest;
             dist = newDist;
             ranking = newRanking;
-          } else if(newRanking == ranking && newDist < dist) {
+          } else if (newRanking == ranking && newDist < dist) {
             dest = newDest;
             dist = newDist;
             ranking = newRanking;
@@ -158,9 +159,9 @@ namespace HeroClash {
     }
 
     private bool IsEnemyHero(GameObject g) {
-      if(g.GetComponent<HeroGolem>() && g.GetComponent<HeroGolem>().Team != Team) {
+      if (g.GetComponent<HeroGolem>() && g.GetComponent<HeroGolem>().Team != Team) {
         return true;
-      } else if(g.GetComponent<HeroGrunt>() && g.GetComponent<HeroGrunt>().Team != Team) {
+      } else if (g.GetComponent<HeroGrunt>() && g.GetComponent<HeroGrunt>().Team != Team) {
         return true;
       }
       return false;
@@ -191,9 +192,7 @@ namespace HeroClash {
     }
 
     private IEnumerator DyingSequence() {
-      State = STATE.IDLE;
       yield return new WaitForSeconds(5.0f);
-      transform.position = new Vector3(100000.0f, 100000.0f, 100000.0f);
       State = STATE.DESTROY;
     }
   }
