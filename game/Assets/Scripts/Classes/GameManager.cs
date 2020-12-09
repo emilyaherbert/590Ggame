@@ -6,7 +6,7 @@ namespace HeroClash {
 
     private const float DIST_EPSILON = 0.1f,
                         SMOOTH_SPEED = 2.0f;
-    private readonly Vector3 OFFSET = (100.0f * Vector3.up) + (60.0f * Vector3.back);
+    private readonly Vector3 OFFSET = (80.0f * Vector3.up) + (60.0f * Vector3.back);
 
     private AudioSource source;
     private Transform target;
