@@ -235,14 +235,6 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1401680572, guid: 6bbfea6690ef7724ba495c866081f855, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1776185760, guid: 6bbfea6690ef7724ba495c866081f855, type: 3}
-      propertyPath: m_Value
-      value: 66
-      objectReference: {fileID: 0}
     - target: {fileID: 1067925524328404, guid: 6bbfea6690ef7724ba495c866081f855, type: 3}
       propertyPath: m_Name
       value: Golem
@@ -538,11 +530,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f2857f81771bb59448f2a6601565de64, type: 3}
---- !u!1 &741191215 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1812659917213882, guid: 705458a9eac3ae740932e6aa33f3ca89, type: 3}
-  m_PrefabInstance: {fileID: 2111574592}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &786249448
 GameObject:
   m_ObjectHideFlags: 0
@@ -1478,26 +1465,6 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1850265107, guid: 705458a9eac3ae740932e6aa33f3ca89, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1850265107, guid: 705458a9eac3ae740932e6aa33f3ca89, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1850265107, guid: 705458a9eac3ae740932e6aa33f3ca89, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 741191215}
-    - target: {fileID: 1850265107, guid: 705458a9eac3ae740932e6aa33f3ca89, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1850265107, guid: 705458a9eac3ae740932e6aa33f3ca89, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: UnityEngine.GameObject, UnityEngine
-      objectReference: {fileID: 0}
     - target: {fileID: 1812659917213882, guid: 705458a9eac3ae740932e6aa33f3ca89, type: 3}
       propertyPath: m_Name
       value: Footman
@@ -1548,10 +1515,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4718552058532164, guid: 705458a9eac3ae740932e6aa33f3ca89, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2439474691908278261, guid: 705458a9eac3ae740932e6aa33f3ca89, type: 3}
-      propertyPath: m_AutoBraking
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
