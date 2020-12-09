@@ -181,7 +181,6 @@ namespace HeroClash {
 
     public IEnumerator NPCAttack() {
       attackStarted = true;
-      hero.Move(transform.position);
       yield return hero.Attack();
       attackStarted = false;
       activeTarget = false;
@@ -329,7 +328,7 @@ namespace HeroClash {
     public override bool F(NPC npc) {
       List<GameObject> nearby = npc.NearbyEnemies();
       Vector3 npcPos = npc.gameObject.transform.position;
-      Vector3 dest = npcPos;
+      Vector3 dest = npc.opponentsShrine.transform.position;
       float dist = Vector3.Distance(npcPos, dest);
       foreach(GameObject c in nearby) {
         Vector3 cPos = c.transform.position;

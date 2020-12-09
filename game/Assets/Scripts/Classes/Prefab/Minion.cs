@@ -176,7 +176,7 @@ namespace HeroClash {
 
     public IEnumerator Attack() {
       State = STATE.IDLE;
-      gameObject.GetComponent<NavMeshAgent>().isStopped = true;
+      nav.isStopped = true;
       while ((Them.Character != null && Them.Character.Self.Health > 0) || (Them.Structure != null && Them.Structure.Integrity > 0)) {
         if (Them.Character != null) {
           Them.Character.Self = new Stat(Them.Character.Self, Them.Character.Self.Health - Self.Damage);
@@ -186,7 +186,7 @@ namespace HeroClash {
         yield return new WaitForSeconds(Self.AtckSpeed);
       }
       State = STATE.MOVE;
-      gameObject.GetComponent<NavMeshAgent>().isStopped = false;
+      nav.isStopped = false;
       activeTarget = false;
     }
 
