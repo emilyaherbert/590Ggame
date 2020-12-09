@@ -133,6 +133,7 @@ namespace HeroClash {
           Them.Structure.Integrity -= Self.Damage;
           XP += (Level + 1) * (XP_MULT_STRUCT * XP_RATE);
         }
+        transform.LookAt(Them.Box.transform);
         anim.SetBool(OTHER_ATCK_HASH, Random.value < 0.5f);
         yield return new WaitForSeconds(Self.AtckSpeed);
       }
