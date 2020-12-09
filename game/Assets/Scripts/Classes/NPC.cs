@@ -64,8 +64,8 @@ namespace HeroClash {
       return new HealthMeetsMinimumPercentage(0.25,
         new HaveActiveAttackTarget(
           new Attack(),
-          new EnemyCharacterWithinVision(
-            new MoveToWorstClosestEnemy(),
+          new EnemiesWithinVision(
+            new MoveToClosestEnemy(),
             new MoveToOpponentsShrine()
           )
         ),
@@ -321,6 +321,30 @@ namespace HeroClash {
     }
   }
 
+  class MoveToClosestEnemy : Node {
+    public MoveToClosestEnemy() {
+      nodeType = NODE_TYPE.LEAF;
+    }
+
+    public override bool F(NPC npc) {
+      List<GameObject> nearby = npc.NearbyEnemies();
+      Vector3 npcPos = npc.gameObject.transform.position;
+      Vector3 dest = npcPos;
+      float dist = Vector3.Distance(npcPos, dest);
+      foreach(GameObject c in nearby) {
+        Vector3 cPos = c.transform.position;
+        Vector3 newDest = cPos;
+        float newDist = Vector3.Distance(npcPos, cPos);
+        if(newDist < dist) {
+          dest = newDest;
+          dist = newDist;
+        }
+      }
+      npc.hero.Move(dest);
+      return true;
+    }
+  }
+
   class MoveToWorstClosestEnemy : Node {
     public MoveToWorstClosestEnemy() {
       nodeType = NODE_TYPE.LEAF;
@@ -358,7 +382,6 @@ namespace HeroClash {
     }
 
     public override bool F(NPC npc) {
-      Debug.Log("Attacking!");
       if(npc.hero.Them.Character == null && npc.hero.Them.Structure == null) {
         npc.StopAttacking();
       } else if(!npc.attackStarted) {

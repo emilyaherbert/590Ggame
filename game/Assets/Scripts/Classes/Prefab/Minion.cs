@@ -5,11 +5,11 @@ using UnityEngine.AI;
 
 namespace HeroClash {
   internal class Minion : MonoBehaviour, ICharacter {
-    internal const float START_ACCEL = 10.0f,
+    internal const float START_ACCEL = 12.0f,
                           START_ATTACK = 0.5f,
                           START_DAMAGE = 10.0f,
                           START_HEALTH = 100.0f,
-                          START_MOVING = 10.0f;
+                          START_MOVING = 14.0f;
 
     private NavMeshAgent nav;
     private int visionRadius = 50;
@@ -25,6 +25,10 @@ namespace HeroClash {
     private Vector3 opposingShrineDest;
     private bool activeTarget;
 
+    private Animator anim;
+    private readonly int OTHER_ATCK_HASH = Animator.StringToHash("otherAtck"),
+                          STATE_HASH = Animator.StringToHash("s");
+
     private void Start() {
       nav = GetComponent<NavMeshAgent>();
       nav.speed = Self.MoveSpeed;
@@ -33,6 +37,7 @@ namespace HeroClash {
       State = STATE.MOVE;
       Them = new Target();
       activeTarget = false;
+      anim = GetComponent<Animator>();
     }
 
     private void Update() {
@@ -85,14 +90,18 @@ namespace HeroClash {
         case STATE.IDLE:
           break;
         case STATE.MOVE:
-          nav.destination = PickDest();
+          anim.SetInteger(STATE_HASH, (int)State);
+          nav.SetDestination(PickDest());
           break;
         case STATE.ATCK:
+          anim.SetInteger(STATE_HASH, (int)State);
           StartCoroutine(Attack());
           break;
         case STATE.DEAD:
-          StopCoroutine(nameof(Attack));
+          anim.SetInteger(STATE_HASH, (int)State);
           activeTarget = false;
+          gameObject.GetComponent<NavMeshAgent>().isStopped = true;
+          StopCoroutine(nameof(Attack));
           StartCoroutine(DyingSequence());
           break;
         case STATE.DESTROY:
@@ -167,6 +176,7 @@ namespace HeroClash {
 
     public IEnumerator Attack() {
       State = STATE.IDLE;
+      gameObject.GetComponent<NavMeshAgent>().isStopped = true;
       while ((Them.Character != null && Them.Character.Self.Health > 0) || (Them.Structure != null && Them.Structure.Integrity > 0)) {
         if (Them.Character != null) {
           Them.Character.Self = new Stat(Them.Character.Self, Them.Character.Self.Health - Self.Damage);
@@ -176,12 +186,12 @@ namespace HeroClash {
         yield return new WaitForSeconds(Self.AtckSpeed);
       }
       State = STATE.MOVE;
+      gameObject.GetComponent<NavMeshAgent>().isStopped = false;
       activeTarget = false;
     }
 
     private IEnumerator DyingSequence() {
       State = STATE.IDLE;
-      nav.destination = transform.position;
       yield return new WaitForSeconds(5.0f);
       transform.position = new Vector3(100000.0f, 100000.0f, 100000.0f);
       State = STATE.DESTROY;
