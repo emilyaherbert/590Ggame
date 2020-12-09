@@ -4,15 +4,15 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace HeroClash {
-    internal class MinionHealthBarController : MonoBehaviour {
+    internal class HeroGruntHealthBarController : MonoBehaviour {
 
+        private Stat stat;
         private Slider slider;
-        private float maxHealth;
 
         // Start is called before the first frame update
         void Start()
         {
-            maxHealth = transform.parent.parent.GetComponentInChildren<Minion>().Self.MaxHealth;
+            stat = transform.parent.parent.GetComponentInChildren<HeroGrunt>().Self;
             slider = gameObject.GetComponent<Slider>();
         }
 
@@ -23,7 +23,7 @@ namespace HeroClash {
         }
 
         private void SetHealthBarUI() {
-            slider.value = transform.parent.parent.GetComponentInChildren<Minion>().Self.Health/maxHealth * 100.0f;
+            slider.value = stat.Health/stat.MaxHealth * 100.0f;
         }
     }
 }

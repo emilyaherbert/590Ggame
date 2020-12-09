@@ -4,15 +4,15 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace HeroClash {
-    internal class MinionHealthBarController : MonoBehaviour {
+    internal class ShrineIntegrityBarController : MonoBehaviour {
 
         private Slider slider;
-        private float maxHealth;
+        private float maxIntegrity;
 
         // Start is called before the first frame update
         void Start()
         {
-            maxHealth = transform.parent.parent.GetComponentInChildren<Minion>().Self.MaxHealth;
+            maxIntegrity = transform.parent.parent.GetComponentInChildren<Shrine>().integrity;
             slider = gameObject.GetComponent<Slider>();
         }
 
@@ -23,7 +23,11 @@ namespace HeroClash {
         }
 
         private void SetHealthBarUI() {
-            slider.value = transform.parent.parent.GetComponentInChildren<Minion>().Self.Health/maxHealth * 100.0f;
+            float integrity = transform.parent.parent.GetComponentInChildren<Shrine>().integrity;
+            if(integrity > maxIntegrity) {
+                maxIntegrity = integrity;
+            }
+            slider.value = integrity/maxIntegrity * 100.0f;
         }
     }
 }

@@ -6,13 +6,13 @@ using UnityEngine.UI;
 namespace HeroClash {
     internal class HeroGolemHealthBarController : MonoBehaviour {
 
-        private Stat stat;
         private Slider slider;
+        private float maxHealth;
 
         // Start is called before the first frame update
         void Start()
         {
-            stat = transform.parent.parent.GetComponentInChildren<HeroGolem>().Self;
+            maxHealth = transform.parent.parent.GetComponentInChildren<HeroGolem>().Self.MaxHealth;
             slider = gameObject.GetComponent<Slider>();
         }
 
@@ -23,7 +23,7 @@ namespace HeroClash {
         }
 
         private void SetHealthBarUI() {
-            slider.value = stat.Health/stat.MaxHealth * 100.0f;
+            slider.value = transform.parent.parent.GetComponentInChildren<HeroGolem>().Self.Health/maxHealth * 100.0f;
         }
     }
 }
