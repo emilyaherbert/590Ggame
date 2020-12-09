@@ -8,6 +8,7 @@ namespace HeroClash {
 
     void OnTriggerEnter(Collider collider);
     void OnTriggerExit(Collider collider);
+    IEnumerator Monitor();
     IEnumerator Spawn();
   }
 }

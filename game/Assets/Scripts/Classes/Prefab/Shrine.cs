@@ -61,6 +61,10 @@ namespace HeroClash {
       }
     }
 
+    public IEnumerator Monitor() {
+      throw new System.NotImplementedException();
+    }
+
     public IEnumerator Spawn() {
       Transform[] spawns = new Transform[3];
       for (int i = 0, j = 0; i < transform.parent.childCount && j < 3; i++) {
