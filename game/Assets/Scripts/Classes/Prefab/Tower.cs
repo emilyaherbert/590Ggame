@@ -25,6 +25,7 @@ namespace HeroClash {
 
     private void Start() {
       render = transform.parent.gameObject.GetComponent<Renderer>();
+      _ = StartCoroutine(nameof(Monitor));
     }
 
     public void OnTriggerEnter(Collider other) {
@@ -45,6 +46,16 @@ namespace HeroClash {
         StopCoroutine(nameof(Spawn));
         target = new Target();
       }
+    }
+
+    public IEnumerator Monitor() {
+      while (Integrity > 0) {
+        yield return null;
+      }
+      StopCoroutine(nameof(Spawn));
+      target = new Target();
+      render.material = materials[0];
+      Destroy(gameObject);
     }
 
     public IEnumerator Spawn() {
