@@ -2,11 +2,11 @@
 using UnityEngine.AI;
 namespace HeroClash {
   internal class HeroGrunt : Hero {
-    private const float START_ACCEL = 10.0f,
+    private const float START_ACCEL = 16.0f,
                         START_ATTACK = 1.0f,
                         START_DAMAGE = 10.0f,
                         START_HEALTH = 100.0f,
-                        START_MOVING = 6.0f;
+                        START_MOVING = 12.0f;
 
     protected override float AccelGain => 0.5f;
     protected override float AttackLoss => 0.02f;

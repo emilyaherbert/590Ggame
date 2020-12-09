@@ -1,0 +1,18 @@
+Characters
+  Mini Legion Footman PBR HP Polyart - Dungeon Mason (http://alexkim0415.wixsite.com/dungeonmason)
+  Mini Legion Grunt PBR HP Polyart - Dungeon Mason (http://alexkim0415.wixsite.com/dungeonmason)
+  Mini Legion Lich PBR HP Polyart - Dungeon Mason (http://alexkim0415.wixsite.com/dungeonmason)
+  Mini Legion Rock Golem PBR HP Polyart - Dungeon Mason (http://alexkim0415.wixsite.com/dungeonmason)
+
+Structures
+  Brazier Set - Peter Schuster (https://www.facebook.com/PeterSchuster.Assets)
+  LowPoly Trees and Rocks - greyRoad Studio (https://www.youtube.com/channel/UCZXhyphqQs0CUY8uaQkQPzA)
+
+Sounds
+  Eight Mountains - Original music by Savfk (https://www.youtube.com/savfkmusic https://www.facebook.com/savfkmusic)
+  Strange the Dreamer - Original music by Savfk (https://www.youtube.com/savfkmusic https://www.facebook.com/savfkmusic)
+  The Impossible - Original music by Savfk (https://www.youtube.com/savfkmusic https://www.facebook.com/savfkmusic)
+  The Travelling Symphony - Original music by Savfk (https://www.youtube.com/savfkmusic https://www.facebook.com/savfkmusic)
+
+Trees
+  Free SpeedTrees Package - SpeedTree® (https://store.speedtree.com/unity/)

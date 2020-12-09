@@ -48,13 +48,14 @@ namespace HeroClash {
     }
 
     public IEnumerator Spawn() {
-      while (true) {
+      while (true && target.Box != null) {
         TowerProjectile tp = Instantiate(Random.value < 0.5f ? prefabs[0] : prefabs[1],
           transform.position, transform.rotation).GetComponent<TowerProjectile>();
         tp.target = target;
         tp.damage = damage;
         yield return new WaitForSeconds(SpawnRate);
       }
+      render.material = materials[0];
     }
   }
 }
