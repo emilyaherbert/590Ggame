@@ -56,7 +56,7 @@ namespace HeroClash {
       StopCoroutine(nameof(Spawn));
       target = new Target();
       render.material = materials[0];
-      Destroy(gameObject);
+      Destroy(transform.parent.gameObject);
     }
 
     public IEnumerator Spawn() {
