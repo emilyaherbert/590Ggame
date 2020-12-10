@@ -11,6 +11,7 @@ namespace HeroClash {
     public GameObject opponentsShrine;
     public bool activeTarget;
     public bool attackStarted;
+    public Vector3 opponentsShrineDest;
 
     public List<GameObject> enemiesWithinVision;
     public List<GameObject> enemiesWithinAttackRange;
@@ -39,6 +40,7 @@ namespace HeroClash {
       activeTarget = false;
       attackStarted = false;
       Team = hero.Team;
+      opponentsShrineDest = opponentsShrine.GetComponent<Collider>().ClosestPoint(transform.position);
     }
 
     private void Update() {
@@ -247,7 +249,7 @@ namespace HeroClash {
     }
 
     public override bool F(NPC npc) {
-      npc.hero.Move(npc.opponentsShrine.transform.position);
+      npc.hero.Move(npc.opponentsShrineDest);
       return true;
     }
   }

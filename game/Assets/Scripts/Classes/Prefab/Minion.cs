@@ -25,7 +25,6 @@ namespace HeroClash {
     public GameObject opposingShrine { get; set; }
 
     private Vector3 opposingShrineDest;
-    private bool activeTarget;
 
     public List<GameObject> enemiesWithinVision;
     public List<(Collider, GameObject)> enemiesWithinAttackRange;
@@ -46,7 +45,6 @@ namespace HeroClash {
       opposingShrineDest = opposingShrine.GetComponent<Collider>().ClosestPoint(transform.position);
       State = STATE.MOVE;
       Them = new Target();
-      activeTarget = false;
       anim = GetComponent<Animator>();
     }
 
@@ -112,7 +110,6 @@ namespace HeroClash {
           anim.SetInteger(STATE_HASH, (int)State);
           if(enemiesWithinAttackRange.Count > 0) {
             State = STATE.ATCK;
-            activeTarget = true;
           } else {
             Vector3 dest = PickDest();
             if(Vector3.Distance(nav.destination, dest) > 1.0f) {
@@ -126,7 +123,6 @@ namespace HeroClash {
           break;
         case STATE.DEAD:
           anim.SetInteger(STATE_HASH, (int)State);
-          activeTarget = false;
           StopCoroutine(nameof(Attack));
           nav.isStopped = true;
           if(triggerDeath == null) {
@@ -200,7 +196,6 @@ namespace HeroClash {
       }
       State = STATE.MOVE;
       nav.isStopped = false;
-      activeTarget = false;
       enemiesWithinAttackRange.Remove(target);
       enemiesWithinVision.Remove(target.Item2);
     }
