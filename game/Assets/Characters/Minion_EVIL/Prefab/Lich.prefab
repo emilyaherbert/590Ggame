@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1048545994}
   - component: {fileID: 1048545996}
   - component: {fileID: 1048545995}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: VisionCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -553,7 +553,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemiesWithinVision: []
-  enemiesWithinAttackRange: []
 --- !u!1 &1537370055453520
 GameObject:
   m_ObjectHideFlags: 0
