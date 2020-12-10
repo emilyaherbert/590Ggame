@@ -13,6 +13,7 @@ namespace HeroClash {
     private Transform target;
 
     private readonly Transform[] spawns = new Transform[2];
+    private readonly Hero[] heroes = new Hero[2];
     [SerializeReference] private GameObject[] prefabs = new GameObject[2];
     [SerializeReference] public AudioClip[] clips = new AudioClip[4];
 
@@ -26,6 +27,27 @@ namespace HeroClash {
       }
     }
 
+    private IEnumerator Respawn(Hero h) {
+      while (true) {
+        if (h.State == STATE.DEAD) {
+          bool isP = h.gameObject.GetComponent<Player>();
+          yield return new WaitForSeconds(1.0f);
+          if (isP) {
+            target = null;
+          }
+          Destroy(h.gameObject);
+          yield return new WaitForSeconds(1.0f);
+          if (isP) {
+            Spawn(TEAM.GOOD);
+          } else {
+            Spawn(TEAM.EVIL);
+          }
+          break;
+        }
+        yield return null;
+      }
+    }
+
     private void Awake() {
       spawns[0] = GameObject.Find("GruntSpawn").transform;
       spawns[1] = GameObject.Find("GolemSpawn").transform;
@@ -33,15 +55,26 @@ namespace HeroClash {
     }
 
     private void Start() {
-      _ = StartCoroutine(nameof(PlayMusic));
-      // TODO: UI to determine which character the player wants to play
-      Player p = Instantiate(prefabs[1], spawns[1].position, spawns[1].rotation).AddComponent<Player>();
-      p.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
-      p.hero = p.GetComponent<HeroGolem>();
-      target = p.transform;
-      NPC npc = Instantiate(prefabs[0], spawns[0].position, spawns[0].rotation).AddComponent<NPC>();
-      npc.hero = npc.GetComponent<HeroGrunt>();
+      Spawn(TEAM.GOOD);
+      Spawn(TEAM.EVIL);
       pauseCanvas.enabled = false;
+      _ = StartCoroutine(nameof(PlayMusic));
+    }
+
+    private void Spawn(TEAM t) {
+      if (t == TEAM.GOOD) {
+        Player p = Instantiate(prefabs[1], spawns[1].position, spawns[1].rotation).AddComponent<Player>();
+        p.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+        p.hero = p.GetComponent<HeroGolem>();
+        heroes[0] = p.hero;
+        target = p.transform;
+        _ = StartCoroutine(nameof(Respawn), heroes[0]);
+      } else {
+        NPC n = Instantiate(prefabs[0], spawns[0].position, spawns[0].rotation).AddComponent<NPC>();
+        n.hero = n.GetComponent<HeroGrunt>();
+        heroes[1] = n.hero;
+        _ = StartCoroutine(nameof(Respawn), heroes[1]);
+      }
     }
 
     private void Update() {
@@ -55,7 +88,7 @@ namespace HeroClash {
     }
 
     private void LateUpdate() {
-      if (Vector3.Distance(transform.position,
+      if (target != null && Vector3.Distance(transform.position,
         target.position + OFFSET) > DIST_EPSILON) {
         transform.position = Vector3.Lerp(transform.position,
           target.position + OFFSET,
