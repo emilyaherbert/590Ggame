@@ -26,15 +26,15 @@ internal struct API {
     }
 
     public bool IsEnemyTower(GameObject g, TEAM Team) {
-      return (g.tag == "Structure") && g.GetComponentInChildren<Tower>() && (g.GetComponentInChildren<Tower>().Team != Team);
+      return (g.tag == "Structure") && g.transform.Find("Behavior") && g.GetComponentInChildren<Tower>() && (g.GetComponentInChildren<Tower>().Team != Team);
     }
 
     public bool IsEnemyShrine(GameObject g, TEAM Team) {
-      return g.tag == "Structure" &&  g.GetComponentInChildren<Shrine>() && g.GetComponentInChildren<Shrine>().Team != Team;
+      return (g.tag == "Structure") && g.transform.Find("Behavior") && g.GetComponentInChildren<Shrine>() && (g.GetComponentInChildren<Shrine>().Team != Team);
     }
 
     public bool IsMyTower(GameObject g, TEAM Team) {
-      return g.GetComponentInChildren<Tower>() && g.GetComponentInChildren<Tower>().Team == Team;
+      return (g.tag == "Structure") && g.transform.Find("Behavior") && g.GetComponentInChildren<Tower>() && g.GetComponentInChildren<Tower>().Team == Team;
     }
 
     public int TypeToRanking(GameObject g, TEAM Team) {
