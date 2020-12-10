@@ -27,6 +27,7 @@ namespace HeroClash {
       render = transform.parent.gameObject.GetComponent<Renderer>();
       Integrity = MAX_INT;
       _ = StartCoroutine(nameof(Spawn));
+      _ = StartCoroutine(nameof(Monitor));
     }
 
     private IEnumerator Heal(Hero hero) {
@@ -62,7 +63,15 @@ namespace HeroClash {
     }
 
     public IEnumerator Monitor() {
-      throw new System.NotImplementedException();
+      while (Integrity > 0) {
+        yield return null;
+      }
+      StopCoroutine(nameof(Spawn));
+      StopCoroutine(nameof(Heal));
+      render.material = materials[0];
+      GameManager gm = FindObjectOfType<GameManager>();
+      gm.GameOver(Team);
+      Destroy(transform.parent.gameObject);
     }
 
     public IEnumerator Spawn() {

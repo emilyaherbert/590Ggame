@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 namespace HeroClash {
   internal class GameManager : MonoBehaviour {
     internal static bool paused;
@@ -16,6 +17,15 @@ namespace HeroClash {
     private readonly Hero[] heroes = new Hero[2];
     [SerializeReference] private GameObject[] prefabs = new GameObject[2];
     [SerializeReference] public AudioClip[] clips = new AudioClip[4];
+
+    internal void GameOver(TEAM t) {
+      Text txt = pauseCanvas.GetComponentInChildren<Text>();
+      paused = true;
+      AudioListener.pause = true;
+      pauseCanvas.transform.position = transform.position;
+      txt.text = t == TEAM.GOOD ? "Victory!" : "Defeat.";
+      pauseCanvas.enabled = true;
+    }
 
     private IEnumerator PlayMusic() {
       while (true) {
