@@ -87,6 +87,15 @@ namespace HeroClash {
       } else if (State == STATE.ATCK && atck == null && NoMove()) {
         atck = StartCoroutine(nameof(Attack));
       }
+
+      if (Self.Health < 0 && State != STATE.DEAD) {
+        StopCoroutine(nameof(Attack));
+        nav.isStopped = true;
+        Them = new Target();
+        atck = null;
+        State = STATE.DEAD;
+        anim.SetInteger(STATE_HASH, (int)State);
+      }
     }
 
     protected IEnumerator XPGain() {
