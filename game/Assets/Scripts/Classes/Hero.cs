@@ -17,7 +17,7 @@ namespace HeroClash {
     private Coroutine atck;
 
     protected Animator anim;
-    protected NavMeshAgent nav;
+    public NavMeshAgent nav;
 
     protected abstract float AccelGain { get; }
     protected abstract float AttackLoss { get; }

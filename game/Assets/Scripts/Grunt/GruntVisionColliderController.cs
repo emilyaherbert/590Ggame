@@ -20,6 +20,9 @@ internal class GruntVisionColliderController : MonoBehaviour {
       GameObject obj = c.gameObject;
       if(api.IsEnemy(obj, Team) && !transform.parent.GetComponent<NPC>().enemiesWithinVision.Contains(obj)) {
         transform.parent.GetComponent<NPC>().enemiesWithinVision.Add(obj);
+      } else if(api.IsMyTower(obj, Team) && !transform.parent.GetComponent<NPC>().myTowersWithinVision.Contains(obj)) {
+        transform.parent.GetComponent<NPC>().myTowersWithinVision.Add(obj);
+        transform.parent.GetComponent<NPC>().myTowersHistory.Add(obj);
       }
     }
 
@@ -27,6 +30,8 @@ internal class GruntVisionColliderController : MonoBehaviour {
       GameObject obj = c.gameObject;
       if(api.IsEnemy(obj, Team) && transform.parent.GetComponent<NPC>().enemiesWithinVision.Contains(obj)) {
         transform.parent.GetComponent<NPC>().enemiesWithinVision.Remove(obj);
+      } else if(api.IsMyTower(obj, Team) && transform.parent.GetComponent<NPC>().myTowersWithinVision.Contains(obj)) {
+        transform.parent.GetComponent<NPC>().myTowersWithinVision.Remove(obj);
       }
     }
 }   
