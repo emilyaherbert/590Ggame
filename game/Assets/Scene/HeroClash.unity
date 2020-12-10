@@ -1544,6 +1544,10 @@ PrefabInstance:
       propertyPath: <Integrity>k__BackingField
       value: 2000
       objectReference: {fileID: 0}
+    - target: {fileID: 2005912313248098521, guid: 554931cf2ecf21444adc06b43497ebad, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2621483092941720302, guid: 554931cf2ecf21444adc06b43497ebad, type: 3}
       propertyPath: m_NavMeshLayer
       value: 1
