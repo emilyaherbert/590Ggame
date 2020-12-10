@@ -12,7 +12,18 @@ namespace HeroClash {
     public bool activeTarget;
     public bool attackStarted;
 
+    public List<GameObject> enemiesWithinVision;
+    public List<GameObject> enemiesWithinAttackRange;
+    public TEAM Team;
+
     private Node decisionTree;
+    private API api;
+
+    private void Awake() {
+      api = new API();
+      enemiesWithinVision = new List<GameObject>();
+      enemiesWithinAttackRange = new List<GameObject>();
+    }
 
     private void Start() {
       GameObject[] objs = GameObject.FindGameObjectsWithTag("Structure");
@@ -27,17 +38,18 @@ namespace HeroClash {
       decisionTree = CreateDecisionTree();
       activeTarget = false;
       attackStarted = false;
+      Team = hero.Team;
     }
 
     private void Update() {
-      //ClassifyDT(decisionTree);
+      ClassifyDT(decisionTree);
     }
 
     public void OnTriggerStay(Collider c) {
       if(activeTarget) {
         return;
       }
-      if(IsEnemy(c.gameObject)) {
+      if(api.IsEnemy(c.gameObject, hero.Team)) {
         if (c.gameObject.CompareTag("Character")) {
           if (c.gameObject.TryGetComponent(out Player p) && p.hero.Team != hero.Team) {
             hero.Them = new Target(c, p.hero);
@@ -88,55 +100,11 @@ namespace HeroClash {
       }
     }
 
-    private bool IsEnemy(GameObject g) {
-      return IsEnemyHero(g) || IsEnemyMinion(g) || IsEnemyShrine(g) || IsEnemyTower(g);
-    }
-
-    private bool IsEnemyCharacter(GameObject g) {
-      return IsEnemyHero(g) || IsEnemyMinion(g);
-    }
-
-    private bool IsEnemyMinion(GameObject g) {
-      return g.GetComponent<Minion>() && g.GetComponent<Minion>().Team != hero.Team;
-    }
-
-    private bool IsEnemyHero(GameObject g) {
-      if(g.GetComponent<HeroGolem>() && g.GetComponent<HeroGolem>().Team != hero.Team) {
-        return true;
-      } else if(g.GetComponent<HeroGrunt>() && g.GetComponent<HeroGrunt>().Team != hero.Team) {
-        return true;
-      }
-      return false;
-    }
-
-    private bool IsEnemyTower(GameObject g) {
-      return g.GetComponentInChildren<Tower>() && g.GetComponentInChildren<Tower>().Team != hero.Team;
-    }
-
-    private bool IsEnemyShrine(GameObject g) {
-      return g.GetComponentInChildren<Shrine>() && g.GetComponentInChildren<Shrine>().Team != hero.Team;
-    }
-
-    private bool IsMyTower(GameObject g) {
-      return g.GetComponentInChildren<Tower>() && g.GetComponentInChildren<Tower>().Team == hero.Team;
-    }
-
-    public List<GameObject> NearbyEnemies() {
-      List<GameObject> nearby = new List<GameObject>();
-      Collider[] hitColliders = Physics.OverlapSphere(transform.position, visionRadius);
-      foreach(Collider c in hitColliders) {
-        if(IsEnemy(c.gameObject)) {
-          nearby.Add(c.gameObject);
-        }
-      }
-      return nearby;
-    }
-
     public List<GameObject> NearbyEnemyCharacters() {
       List<GameObject> nearby = new List<GameObject>();
       Collider[] hitColliders = Physics.OverlapSphere(transform.position, visionRadius);
       foreach(Collider c in hitColliders) {
-        if(IsEnemyCharacter(c.gameObject)) {
+        if(api.IsEnemyCharacter(c.gameObject, hero.Team)) {
           nearby.Add(c.gameObject);
         }
       }
@@ -147,25 +115,11 @@ namespace HeroClash {
       List<GameObject> nearby = new List<GameObject>();
       Collider[] hitColliders = Physics.OverlapSphere(transform.position, visionRadius);
       foreach(Collider c in hitColliders) {
-        if(IsMyTower(c.gameObject)) {
+        if(api.IsMyTower(c.gameObject, hero.Team)) {
           nearby.Add(c.gameObject);
         }
       }
       return nearby;
-    }
-
-    public int TypeToRanking(GameObject g) {
-      if(IsEnemyMinion(g)) {
-        return 1;
-      } else if(IsEnemyTower(g)) {
-        return 2;
-      } else if(IsEnemyHero(g)) {
-        return 3;
-      } else if(IsEnemyShrine(g)) {
-        return 4;
-      } else {
-        return -1;
-      }
     }
 
     public void Attack() {
@@ -246,8 +200,7 @@ namespace HeroClash {
     }
 
     public override bool F(NPC npc) {
-      List<GameObject> nearby = npc.NearbyEnemies();
-      return nearby.Count > 0;
+      return npc.enemiesWithinVision.Count > 0;
     }
   }
 
@@ -326,14 +279,12 @@ namespace HeroClash {
     }
 
     public override bool F(NPC npc) {
-      List<GameObject> nearby = npc.NearbyEnemies();
       Vector3 npcPos = npc.gameObject.transform.position;
       Vector3 dest = npc.opponentsShrine.transform.position;
       float dist = Vector3.Distance(npcPos, dest);
-      foreach(GameObject c in nearby) {
-        Vector3 cPos = c.transform.position;
-        Vector3 newDest = cPos;
-        float newDist = Vector3.Distance(npcPos, cPos);
+      foreach(GameObject enemy in npc.enemiesWithinVision) {
+        Vector3 newDest = enemy.transform.position;
+        float newDist = Vector3.Distance(npcPos, newDest);
         if(newDist < dist) {
           dest = newDest;
           dist = newDist;
@@ -350,16 +301,15 @@ namespace HeroClash {
     }
 
     public override bool F(NPC npc) {
-      List<GameObject> nearby = npc.NearbyEnemies();
+      API api = new API();
       Vector3 npcPos = npc.gameObject.transform.position;
       Vector3 dest = npcPos;
       float dist = Vector3.Distance(npcPos, dest);
       int ranking = 0;
-      foreach(GameObject c in nearby) {
-        Vector3 cPos = c.transform.position;
-        Vector3 newDest = cPos;
-        float newDist = Vector3.Distance(npcPos, cPos);
-        int newRanking = npc.TypeToRanking(c.gameObject);
+      foreach(GameObject enemy in npc.enemiesWithinVision) {
+        Vector3 newDest = enemy.transform.position;
+        float newDist = Vector3.Distance(npcPos, newDest);
+        int newRanking = api.TypeToRanking(enemy.gameObject, npc.Team);
         if(newRanking > ranking) {
           dest = newDest;
           dist = newDist;

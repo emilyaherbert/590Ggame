@@ -14,7 +14,7 @@ namespace HeroClash {
     private Coroutine move,
                       triggerDeath;
     private NavMeshAgent nav;
-    private int visionRadius = 50;
+    private API api;
 
     public float DamageGain => 5.0f;
     public float HealthGain => 10.0f;
@@ -27,9 +27,17 @@ namespace HeroClash {
     private Vector3 opposingShrineDest;
     private bool activeTarget;
 
+    public List<GameObject> enemiesWithinVision;
+    public List<(Collider, GameObject)> enemiesWithinAttackRange;
+
     private Animator anim;
     private readonly int OTHER_ATCK_HASH = Animator.StringToHash("otherAtck"),
                           STATE_HASH = Animator.StringToHash("s");
+
+    private void Awake() {
+      enemiesWithinVision = new List<GameObject>();
+      enemiesWithinAttackRange = new List<(Collider, GameObject)>();
+    }
 
     private void Start() {
       nav = GetComponent<NavMeshAgent>();
@@ -43,40 +51,46 @@ namespace HeroClash {
     }
 
     private void Update() {
+      enemiesWithinVision = RemoveNulls(enemiesWithinVision);
+      enemiesWithinAttackRange = RemoveNulls2(enemiesWithinAttackRange);
       if (Self.Health < 0 && triggerDeath == null) {
         State = STATE.DEAD;
-      } else if (State != STATE.MOVE) {
-        StopCoroutine(nameof(PickDest));
-        move = null;
       }
       FSM();
     }
 
-    public void OnTriggerStay(Collider c) {
-      if (activeTarget) {
-        return;
+    public void OnTriggerEnter(Collider c) {
+      GameObject obj = c.gameObject;
+      if(api.IsEnemy(obj, Team) && !enemiesWithinAttackRange.Contains((c, obj))) {
+        enemiesWithinAttackRange.Add((c, obj));
       }
-      if (IsEnemy(c.gameObject)) {
-        if (c.gameObject.CompareTag("Character")) {
-          if (c.gameObject.TryGetComponent(out Player p) && p.hero.Team != Team) {
-            Them = new Target(c, p.hero);
-          } else if (c.gameObject.TryGetComponent(out NPC n) && n.hero.Team != Team) {
-            Them = new Target(c, n.hero);
-          } else if (c.gameObject.TryGetComponent(out Minion m) && m.Team != Team) {
-            Them = new Target(c, m);
-          }
-        } else {
-          IStructure s = c.gameObject.GetComponentInChildren<Tower>();
-          if (s == null) {
-            s = c.gameObject.GetComponentInChildren<Shrine>();
-          }
-          if (s.Team != Team) {
-            Them = new Target(c, s);
-          }
+    }
+
+    public void OnTriggerExit(Collider c) {
+      GameObject obj = c.gameObject;
+      if(api.IsEnemy(obj, Team) && enemiesWithinAttackRange.Contains((c, obj))) {
+        enemiesWithinAttackRange.Remove((c, obj));
+      }
+    }
+
+    private List<GameObject> RemoveNulls(List<GameObject> prev) {
+      List<GameObject> ret = new List<GameObject>();
+      foreach(var obj in prev) {
+        if(obj != null) {
+          ret.Add(obj);
         }
-        State = STATE.ATCK;
-        activeTarget = true;
       }
+      return ret;
+    }
+
+    private List<(Collider, GameObject)> RemoveNulls2(List<(Collider, GameObject)> prev) {
+      List<(Collider, GameObject)> ret = new List<(Collider, GameObject)>();
+      foreach(var obj in prev) {
+        if(obj.Item2 != null) {
+          ret.Add(obj);
+        }
+      }
+      return ret;
     }
 
     /*
@@ -96,8 +110,14 @@ namespace HeroClash {
           break;
         case STATE.MOVE:
           anim.SetInteger(STATE_HASH, (int)State);
-          if (move == null) {
-            move = StartCoroutine(nameof(PickDest));
+          if(enemiesWithinAttackRange.Count > 0) {
+            State = STATE.ATCK;
+            activeTarget = true;
+          } else {
+            Vector3 dest = PickDest();
+            if(Vector3.Distance(nav.destination, dest) > 1.0f) {
+              nav.SetDestination(dest);
+            }
           }
           break;
         case STATE.ATCK:
@@ -107,85 +127,69 @@ namespace HeroClash {
         case STATE.DEAD:
           anim.SetInteger(STATE_HASH, (int)State);
           activeTarget = false;
-          nav.isStopped = true;
           StopCoroutine(nameof(Attack));
-          triggerDeath = StartCoroutine(nameof(DyingSequence));
+          nav.isStopped = true;
+          if(triggerDeath == null) {
+            triggerDeath = StartCoroutine(nameof(DyingSequence));
+          }
           break;
       }
     }
 
-    private int TypeToRanking(GameObject g) {
-      if (IsEnemyMinion(g)) {
-        return 1;
-      } else if (IsEnemyTower(g)) {
-        return 2;
-      } else if (IsEnemyHero(g)) {
-        return 3;
-      } else if (IsEnemyShrine(g)) {
-        return 4;
+    private Vector3 ClosestWorstEnemy() {
+      GameObject target = opposingShrine;
+      float dist = Vector3.Distance(transform.position, target.transform.position);
+      int ranking = 0;
+      foreach(GameObject enemy in enemiesWithinVision) {
+        Vector3 newDest = enemy.transform.position;
+        float newDist = Vector3.Distance(transform.position, enemy.transform.position);
+        int newRanking = api.TypeToRanking(enemy.gameObject, Team);
+        if (newRanking > ranking) {
+          target = enemy;
+          dist = newDist;
+          ranking = newRanking;
+        } else if (newRanking == ranking && newDist < dist) {
+          target = enemy;
+          dist = newDist;
+          ranking = newRanking;
+        }
+      }
+      return target == opposingShrine ? opposingShrineDest : target.transform.position;
+    }
+
+    private Vector3 PickDest() {
+      return ClosestWorstEnemy();
+    }
+
+    private void SetThem((Collider, GameObject) e) {
+      GameObject obj = e.Item2;
+      Collider c = e.Item1;
+      if (obj.CompareTag("Character")) {
+        if (obj.TryGetComponent(out Player p) && p.hero.Team != Team) {
+          Them = new Target(c, p.hero);
+        } else if (obj.TryGetComponent(out NPC n) && n.hero.Team != Team) {
+          Them = new Target(c, n.hero);
+        } else if (obj.TryGetComponent(out Minion m) && m.Team != Team) {
+          Them = new Target(c, m);
+        }
       } else {
-        return -1;
-      }
-    }
-
-    private IEnumerator PickDest() {
-      // The default movement is to move towards the opponents shrine
-      while (true) {
-        Vector3 dest = opposingShrineDest;
-        float dist = Vector3.Distance(transform.position, dest);
-        int ranking = 0;
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, visionRadius);
-        foreach (Collider c in hitColliders) {
-          if (IsEnemy(c.gameObject)) {
-            Vector3 newDest = c.transform.position;
-            float newDist = Vector3.Distance(transform.position, c.transform.position);
-            int newRanking = TypeToRanking(c.gameObject);
-            if (newRanking > ranking) {
-              dest = newDest;
-              dist = newDist;
-              ranking = newRanking;
-            } else if (newRanking == ranking && newDist < dist) {
-              dest = newDest;
-              dist = newDist;
-              ranking = newRanking;
-            }
-          }
+        IStructure s = null;
+        if(obj.GetComponentInChildren<Tower>()) {
+          s = obj.GetComponentInChildren<Tower>();
+        } else if(obj.GetComponentInChildren<Shrine>()) {
+          s = obj.GetComponentInChildren<Shrine>();
         }
-        if (Vector3.Distance(nav.destination, dest) > 1.0f) {
-          _ = nav.SetDestination(dest);
+        if (s.Team != Team) {
+          Them = new Target(c, s);
         }
-        yield return new WaitForSeconds(0.1f);
       }
-    }
-
-    private bool IsEnemy(GameObject g) {
-      return IsEnemyHero(g) || IsEnemyMinion(g) || IsEnemyShrine(g) || IsEnemyTower(g);
-    }
-
-    private bool IsEnemyMinion(GameObject g) {
-      return g.GetComponent<Minion>() && g.GetComponent<Minion>().Team != Team;
-    }
-
-    private bool IsEnemyHero(GameObject g) {
-      if (g.GetComponent<HeroGolem>() && g.GetComponent<HeroGolem>().Team != Team) {
-        return true;
-      } else if (g.GetComponent<HeroGrunt>() && g.GetComponent<HeroGrunt>().Team != Team) {
-        return true;
-      }
-      return false;
-    }
-
-    private bool IsEnemyTower(GameObject g) {
-      return g.GetComponentInChildren<Tower>() && g.GetComponentInChildren<Tower>().Team != Team;
-    }
-
-    private bool IsEnemyShrine(GameObject g) {
-      return g.GetComponentInChildren<Shrine>() && g.GetComponentInChildren<Shrine>().Team != Team;
     }
 
     public IEnumerator Attack() {
       State = STATE.IDLE;
       nav.isStopped = true;
+      (Collider, GameObject) target = enemiesWithinAttackRange[0];
+      SetThem(target);
       while ((Them.Character != null && Them.Character.Self.Health > 0) || (Them.Structure != null && Them.Structure.Integrity > 0)) {
         if (Them.Character != null) {
           Them.Character.Self = new Stat(Them.Character.Self, Them.Character.Self.Health - Self.Damage);
@@ -197,6 +201,8 @@ namespace HeroClash {
       State = STATE.MOVE;
       nav.isStopped = false;
       activeTarget = false;
+      enemiesWithinAttackRange.Remove(target);
+      enemiesWithinVision.Remove(target.Item2);
     }
 
     private IEnumerator DyingSequence() {
