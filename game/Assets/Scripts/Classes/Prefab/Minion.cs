@@ -55,9 +55,6 @@ namespace HeroClash {
       enemiesWithinAttackRange = RemoveNulls2(enemiesWithinAttackRange);
       if (Self.Health < 0 && triggerDeath == null) {
         State = STATE.DEAD;
-      } else if (State != STATE.MOVE) {
-        StopCoroutine(nameof(PickDest));
-        move = null;
       }
       FSM();
     }
@@ -116,7 +113,7 @@ namespace HeroClash {
           if(enemiesWithinAttackRange.Count > 0) {
             State = STATE.ATCK;
             activeTarget = true;
-          } else if(move == null) {
+          } else {
             Vector3 dest = PickDest();
             if(Vector3.Distance(nav.destination, dest) > 1.0f) {
               nav.SetDestination(dest);
@@ -130,14 +127,16 @@ namespace HeroClash {
         case STATE.DEAD:
           anim.SetInteger(STATE_HASH, (int)State);
           activeTarget = false;
-          nav.isStopped = true;
           StopCoroutine(nameof(Attack));
-          triggerDeath = StartCoroutine(nameof(DyingSequence));
+          nav.isStopped = true;
+          if(triggerDeath == null) {
+            triggerDeath = StartCoroutine(nameof(DyingSequence));
+          }
           break;
       }
     }
 
-    private GameObject ClosestWorstEnemy() {
+    private Vector3 ClosestWorstEnemy() {
       GameObject target = opposingShrine;
       float dist = Vector3.Distance(transform.position, target.transform.position);
       int ranking = 0;
@@ -155,11 +154,11 @@ namespace HeroClash {
           ranking = newRanking;
         }
       }
-      return target;
+      return target == opposingShrine ? opposingShrineDest : target.transform.position;
     }
 
     private Vector3 PickDest() {
-      return ClosestWorstEnemy().transform.position;
+      return ClosestWorstEnemy();
     }
 
     private void SetThem((Collider, GameObject) e) {
@@ -207,8 +206,8 @@ namespace HeroClash {
     }
 
     private IEnumerator DyingSequence() {
-      yield return new WaitForSeconds(5.0f);
-      State = STATE.DESTROY;
+      yield return new WaitForSeconds(2.0f);
+      Destroy(gameObject);
     }
   }
 }
