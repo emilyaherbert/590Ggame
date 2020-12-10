@@ -117,7 +117,10 @@ namespace HeroClash {
             State = STATE.ATCK;
             activeTarget = true;
           } else if(move == null) {
-            nav.SetDestination(PickDest());
+            Vector3 dest = PickDest();
+            if(Vector3.Distance(nav.destination, dest) > 1.0f) {
+              nav.SetDestination(dest);
+            }
           }
           break;
         case STATE.ATCK:
@@ -151,10 +154,6 @@ namespace HeroClash {
           dist = newDist;
           ranking = newRanking;
         }
-        if (Vector3.Distance(nav.destination, dest) > 1.0f) {
-          _ = nav.SetDestination(dest);
-        }
-        yield return new WaitForSeconds(0.1f);
       }
       return target;
     }
