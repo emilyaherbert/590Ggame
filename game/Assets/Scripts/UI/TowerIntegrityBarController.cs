@@ -23,11 +23,13 @@ namespace HeroClash {
         }
 
         private void SetHealthBarUI() {
-            float integrity = transform.parent.parent.GetComponentInChildren<Tower>().Integrity;
-            if(integrity > maxIntegrity) {
-                maxIntegrity = integrity;
+            if(transform.parent.parent.GetComponentInChildren<Tower>()) {
+                float integrity = transform.parent.parent.GetComponentInChildren<Tower>().Integrity;
+                if(integrity > maxIntegrity) {
+                    maxIntegrity = integrity;
+                }
+                slider.value = integrity/maxIntegrity * 100.0f;
             }
-            slider.value = integrity/maxIntegrity * 100.0f;
         }
     }
 }
