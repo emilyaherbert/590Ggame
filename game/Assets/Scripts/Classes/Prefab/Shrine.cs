@@ -20,7 +20,7 @@ namespace HeroClash {
       get => integrity;
       set => integrity = Mathf.Max(Mathf.Min(MAX_INT, value), 0);
     }
-    public float SpawnRate => 120.0f;
+    public float SpawnRate => 15.0f;
     [field: SerializeField] public TEAM Team { get; set; }
 
     private void Start() {
