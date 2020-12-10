@@ -208,8 +208,6 @@ namespace HeroClash {
 
     private IEnumerator DyingSequence() {
       yield return new WaitForSeconds(5.0f);
-      transform.position = new Vector3(100000.0f, 100000.0f, 1000000.0f);
-      yield return new WaitForSeconds(1.0f);
       State = STATE.DESTROY;
     }
   }
