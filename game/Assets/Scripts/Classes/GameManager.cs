@@ -4,12 +4,11 @@ namespace HeroClash {
   internal class GameManager : MonoBehaviour {
     internal static bool paused;
 
-    public Canvas pauseCanvas;
-
     private const float DIST_EPSILON = 0.1f,
                         SMOOTH_SPEED = 2.0f;
     private readonly Vector3 OFFSET = (80.0f * Vector3.up) + (60.0f * Vector3.back);
 
+    [SerializeReference] private Canvas pauseCanvas = default;
     private AudioSource source;
     private Transform target;
 
@@ -49,11 +48,8 @@ namespace HeroClash {
       if (Input.GetKeyDown(KeyCode.Escape)) {
         Time.timeScale = Time.timeScale == 0 ? 1 : 0;
         paused = !paused;
-        if (paused) {
-          pauseCanvas.enabled = true;
-        } else {
-          pauseCanvas.enabled = false;
-        }
+        pauseCanvas.transform.position = transform.position;
+        pauseCanvas.enabled = paused;
         AudioListener.pause = !AudioListener.pause;
       }
     }
