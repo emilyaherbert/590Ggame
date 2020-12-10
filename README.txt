@@ -1,7 +1,11 @@
+Video:
+
+https://umass.box.com/s/rzyj4l12r3bnjnlb1pdkeeuqsblffrcb
+
 Breakdown of work:
 
 Joseph:
-game mechanics, rules, map, sound, character design, animations
+(in order of level of contribution) game mechanics, rules, map, sound, character design, animations
 - Scripts/Prefab/HeroGolem
 - Scripts/Prefab/HeroGrunt
 - Scripts/Prefab/Shrine
@@ -18,7 +22,7 @@ game mechanics, rules, map, sound, character design, animations
 - Structs/Target
 
 Emily:
-AI, UI, game mechanics, rules, animations
+(in order of level of contribution) AI, UI, game mechanics, rules, animations
 - Scripts/Prefab/Minion
 - Scripts/NPC
 - Grunt/GruntVisionController
