@@ -11,7 +11,8 @@ namespace HeroClash {
                           START_HEALTH = 100.0f,
                           START_MOVING = 14.0f;
 
-    private Coroutine triggerDeath;
+    private Coroutine move,
+                      triggerDeath;
     private NavMeshAgent nav;
     private API api;
 
@@ -42,7 +43,7 @@ namespace HeroClash {
       nav = GetComponent<NavMeshAgent>();
       nav.speed = Self.MoveSpeed;
       nav.acceleration = Self.Accelerate;
-      opposingShrineDest = opposingShrine.transform.position;
+      opposingShrineDest = opposingShrine.GetComponent<Collider>().ClosestPoint(transform.position);
       State = STATE.MOVE;
       Them = new Target();
       activeTarget = false;
@@ -54,6 +55,9 @@ namespace HeroClash {
       enemiesWithinAttackRange = RemoveNulls2(enemiesWithinAttackRange);
       if (Self.Health < 0 && triggerDeath == null) {
         State = STATE.DEAD;
+      } else if (State != STATE.MOVE) {
+        StopCoroutine(nameof(PickDest));
+        move = null;
       }
       FSM();
     }
@@ -112,7 +116,7 @@ namespace HeroClash {
           if(enemiesWithinAttackRange.Count > 0) {
             State = STATE.ATCK;
             activeTarget = true;
-          } else {
+          } else if(move == null) {
             nav.SetDestination(PickDest());
           }
           break;
@@ -126,9 +130,6 @@ namespace HeroClash {
           nav.isStopped = true;
           StopCoroutine(nameof(Attack));
           triggerDeath = StartCoroutine(nameof(DyingSequence));
-          break;
-        case STATE.DESTROY:
-          Destroy(gameObject);
           break;
       }
     }
@@ -150,6 +151,10 @@ namespace HeroClash {
           dist = newDist;
           ranking = newRanking;
         }
+        if (Vector3.Distance(nav.destination, dest) > 1.0f) {
+          _ = nav.SetDestination(dest);
+        }
+        yield return new WaitForSeconds(0.1f);
       }
       return target;
     }
