@@ -12,6 +12,7 @@ namespace HeroClash {
     public bool activeTarget;
     public bool attackStarted;
     public Vector3 opponentsShrineDest;
+    public Vector3 myShrineDest;
 
     public List<GameObject> enemiesWithinVision;
     public List<(Collider, GameObject)> enemiesWithinAttackRange;
@@ -39,16 +40,19 @@ namespace HeroClash {
         }
       }
 
-      decisionTree = CreateDecisionTree();
+      decisionTree = CreateDecisionTree2();
       activeTarget = false;
       attackStarted = false;
       Team = hero.Team;
       opponentsShrineDest = opponentsShrine.GetComponent<Collider>().ClosestPoint(transform.position);
+      myShrineDest = myShrine.GetComponent<Collider>().ClosestPoint(transform.position);
     }
 
     private void Update() {
-      enemiesWithinVision = FilterOutTowers(RemoveNulls(enemiesWithinVision));
-      enemiesWithinAttackRange = FilterOutTowers2(RemoveNulls2(enemiesWithinAttackRange));
+      //enemiesWithinVision = FilterOutTowers(RemoveNulls(enemiesWithinVision));
+      //enemiesWithinAttackRange = FilterOutTowers2(RemoveNulls2(enemiesWithinAttackRange));
+      enemiesWithinVision = RemoveNulls(enemiesWithinVision);
+      enemiesWithinAttackRange = RemoveNulls2(enemiesWithinAttackRange);
       myTowersWithinVision = RemoveNulls(myTowersWithinVision);
       ClassifyDT(decisionTree);
     }
@@ -56,6 +60,7 @@ namespace HeroClash {
     public void OnTriggerEnter(Collider c) {
       GameObject obj = c.gameObject;
       if(api.IsEnemy(obj, Team) && !enemiesWithinAttackRange.Contains((c, obj))) {
+        Debug.Log("found enemy!");
         enemiesWithinAttackRange.Add((c, obj));
       }
     }
@@ -67,29 +72,22 @@ namespace HeroClash {
       }
     }
 
-    private Node CreateDecisionTree() {
+    private Node CreateDecisionTree2() {
+      Node attackSubNode = new MoreThanNEnemiesWithinAttackRange(1,
+        new Attack(),
+        new MoveToClosestEnemy()
+      );
+
       return new HealthMeetsMinimumPercentage(0.25,
-        new HaveActiveAttackTarget(
-          new Attack(),
-          new EnemiesWithinVision(
-            new MoveToClosestEnemy(),
+        new MoreThanNEnemiesWithinVision(3,
+          new MyTowerWithinVision(
+            attackSubNode,
+            new MoveToClosestMyTower()
+          ),
+          new MoreThanNEnemiesWithinVision(1,
+            attackSubNode,
             new MoveToOpponentsShrine()
           )
-        ),
-        new MoveToMyShrine());
-    }
-
-    private Node CreateDecisionTree2() {
-      return new HealthMeetsMinimumPercentage(0.25,
-        new MoreThanNEnemiesWithinVision(1,
-          new MoreThanNEnemiesWithinVision(3,
-            new MyTowerWithinVision(
-              new Attack(),
-              new MoveToClosestMyTower()
-            ),
-            new Attack()
-          ),
-          new MoveToOpponentsShrine()
         ),
         new MoveToMyShrine()
       );
@@ -162,22 +160,26 @@ namespace HeroClash {
     }
 
     public void Attack() {
+      attackStarted = true;
+      hero.Move(hero.transform.position);
+      hero.nav.isStopped = true;
       StartCoroutine(NPCAttack());
     }
 
     public void StopAttacking() {
       attackStarted = false;
       activeTarget = false;
+      hero.nav.isStopped = false;
       StopCoroutine(nameof(hero.Attack));
     }
 
     public IEnumerator NPCAttack() {
-      attackStarted = true;
       (Collider, GameObject) target = enemiesWithinAttackRange[0];
       SetThem(target);
       yield return hero.Attack();
       attackStarted = false;
       activeTarget = false;
+      hero.nav.isStopped = false;
       enemiesWithinAttackRange.Remove(target);
       enemiesWithinVision.Remove(target.Item2);
     }
@@ -298,6 +300,21 @@ namespace HeroClash {
     }
   }
 
+  class MoreThanNEnemiesWithinAttackRange : Node {
+    int number;
+
+    public MoreThanNEnemiesWithinAttackRange(int n, Node l, Node r) {
+      nodeType = NODE_TYPE.SPLIT;
+      number = n;
+      left = l;
+      right = r;
+    }
+
+    public override bool F(NPC npc) {
+      return npc.enemiesWithinAttackRange.Count > number;
+    }
+  }
+
   class MyTowerWithinVision : Node {
     public MyTowerWithinVision(Node l, Node r) {
       nodeType = NODE_TYPE.SPLIT;
@@ -316,7 +333,7 @@ namespace HeroClash {
     }
 
     public override bool F(NPC npc) {
-      npc.hero.Move(npc.myShrine.transform.position);
+      npc.hero.Move(npc.myShrineDest);
       return true;
     }
   }
@@ -338,6 +355,7 @@ namespace HeroClash {
     }
 
     public override bool F(NPC npc) {
+      Debug.Log("move to closest tower!");
       GameObject closest = null;
       float dist = 99999999.0f;
       foreach(GameObject tower in npc.myTowersHistory) {
@@ -359,6 +377,7 @@ namespace HeroClash {
     }
 
     public override bool F(NPC npc) {
+      Debug.Log("move to closest enemy!");
       Vector3 npcPos = npc.gameObject.transform.position;
       Vector3 dest = npc.opponentsShrine.transform.position;
       float dist = Vector3.Distance(npcPos, dest);
@@ -381,6 +400,7 @@ namespace HeroClash {
     }
 
     public override bool F(NPC npc) {
+      Debug.Log("attack!");
       if(npc.hero.Them.Character == null && npc.hero.Them.Structure == null) {
         npc.StopAttacking();
       } else if(!npc.attackStarted) {
