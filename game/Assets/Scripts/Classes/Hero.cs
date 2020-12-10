@@ -53,7 +53,7 @@ namespace HeroClash {
       Vector3 pt = Them.Box.ClosestPoint(transform.position);
       pt = new Vector3(pt.x, FIX_Y, pt.z);
       if (Vector3.Distance(transform.position, pt) > ATTACK_EPSILON) {
-        nav.SetDestination(pt);
+        _ = nav.SetDestination(pt);
         Move(false);
         return false;
       }
@@ -126,7 +126,7 @@ namespace HeroClash {
     }
 
     public void Move(Vector3 loc) {
-      nav.SetDestination(new Vector3(loc.x, FIX_Y, loc.z));
+      _ = nav.SetDestination(new Vector3(loc.x, FIX_Y, loc.z));
       Move(true);
     }
 
